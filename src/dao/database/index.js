@@ -157,14 +157,14 @@ const Database = (table) => {
    * @callback range
    * @param {any} lower
    * @param {any} upper
-   * @param {any} lowerOpen
-   * @param {any} upperOpen
+   * @param {bool} lowerOpen
+   * @param {bool} upperOpen
    */
   /**
    * Get all the objects stored in a specific range
    * @param {range} range
    * @param {"next"|"prev"} direction: prev descending order and next ascending order
-   * @returns
+   * @returns {any[]}
    */
   const getRangeById = async (range, direction) =>
     new Promise((resolve, reject) =>
@@ -197,13 +197,18 @@ const Database = (table) => {
     );
 
   /**
-   * Get all the objects stored in a specific range
+   * @callback range
    * @param {any} lower
    * @param {any} upper
-   * @param {any} lowerOpen
-   * @param {any} upperOpen
+   * @param {bool} lowerOpen
+   * @param {bool} upperOpen
+   */
+  /**
+   *
+   * @param {any} index
+   * @param {range} range
    * @param {"next"|"prev"} direction: prev descending order and next ascending order
-   * @returns
+   * @returns {any[]}
    */
   const getRange = async (index, range, direction) =>
     new Promise((resolve, reject) =>

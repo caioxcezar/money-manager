@@ -16,9 +16,9 @@ const Table = ({
   const onChangeValue = (idx, key, value) =>
     setEditing({ ...editing, [`${idx}.${key}`]: value });
 
-  const onSubmit = (idx, key) => {
+  const onSubmit = (value, idx, key) => {
     let aux = list;
-    aux[idx][key] = editing[`${idx}.${key}`];
+    aux[idx][key] = value;
     onChange(aux[idx]);
   };
 
@@ -38,7 +38,7 @@ const Table = ({
           disabled={readonly}
           placeholder={key}
           onChange={(value) => onChangeValue(idx, key, value)}
-          onSubmit={() => onSubmit(idx, key)}
+          onSubmit={(value) => onSubmit(value, idx, key)}
           onCancel={() => onChangeValue(idx, key, item[key])}
         />
       ))}

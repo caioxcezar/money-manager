@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import Link from "next/link";
 
 const pages = [
+  { path: "/", title: "Home" },
   { path: "/expenses", title: "Expenses" },
   { path: "/categories", title: "Categories" },
 ];

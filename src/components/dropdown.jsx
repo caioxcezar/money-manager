@@ -7,6 +7,7 @@ const Dropdown = ({
   onChange = () => null,
   value = {},
   error,
+  className,
 }) => {
   const labelStyle = error
     ? "block mb-2 text-sm font-medium text-red-700 dark:text-red-500"
@@ -17,7 +18,7 @@ const Dropdown = ({
     : "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500";
 
   return (
-    <div>
+    <div className={className}>
       <label className={labelStyle}>{text}</label>
       <select
         className={inputStyle}
@@ -37,6 +38,7 @@ const Dropdown = ({
   );
 };
 Dropdown.propTypes = {
+  className: PropTypes.string,
   options: PropTypes.array,
   onChange: PropTypes.func,
   text: PropTypes.string,

@@ -9,7 +9,7 @@ import Button from "@/components/button";
 import Dropdown from "@/components/Dropdown";
 import CategoryDao from "@/dao/category";
 import _expense from "@/models/expense";
-import { fromString } from "@/Utils/dates";
+import { fromMillis, fromString, now } from "@/Utils/dates";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
@@ -19,12 +19,26 @@ const Expenses = () => {
   const [category, setCategory] = useState({ value: {}, error: true });
   const [date, setDate] = useState({ value: "", error: true });
   const [amountSpent, setAmount] = useState({ value: "", error: true });
-  const [repeat, setRepeat] = useState({ value: "0", error: false });
+  const [repeat, setRepeat] = useState(0);
+
+  const [order, setOrder] = useState({ title: "id", order: "next" });
+  const [startingDate, setStartingDate] = useState(now().toMillis());
+  const [endingDate, setEndingDate] = useState(now().toMillis());
 
   useEffect(() => {
-    onLoad();
     loadCategories();
+    setFilter();
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [startingDate, endingDate, order]);
+
+  const setFilter = () => {
+    const today = now();
+    setStartingDate(today.startOf("month").toMillis());
+    setEndingDate(today.endOf("month").toMillis());
+  };
 
   const loadCategories = async () => {
     const categories = await CategoryDao.getAll();
@@ -42,11 +56,14 @@ const Expenses = () => {
     if (categories.length) setCategory({ error: false, value: categories[0] });
   };
 
-  const onLoad = async (order) => {
+  const loadData = async () => {
     try {
-      const all = order
-        ? await ExpenseDao.getRange(order)
-        : await ExpenseDao.getAll();
+      const all = await ExpenseDao.getRange(order, {
+        lower: startingDate,
+        upper: endingDate,
+        lowerOpen: false,
+        upperOpen: false,
+      });
       setExpenses(all);
     } catch (error) {
       toast.error(error);
@@ -62,12 +79,12 @@ const Expenses = () => {
   }) => {
     try {
       await ExpenseDao.update(id, description, category, date, amountSpent);
-      onLoad();
+      loadData();
       toast.success("Updated successfully");
     } catch (error) {
       toast.error("Error while updateding");
     } finally {
-      onLoad();
+      loadData();
     }
   };
 
@@ -77,24 +94,24 @@ const Expenses = () => {
         description.error ||
         category.error ||
         date.error ||
-        amountSpent.error ||
-        repeat.error
+        amountSpent.error
       )
         return toast.error("Fill in all fields");
 
-      for (let i = 0; i <= repeat.value; i++) {
-        let rDate = fromString(date.value);
+      for (let i = 0; i <= repeat; i++) {
+        let rDate = fromMillis(date.value);
+        rDate = fromString(rDate);
         rDate = rDate.set({ month: rDate.month + i });
 
         await ExpenseDao.insert(
           description.value,
-          category.value.id,
+          category.value,
           rDate.toMillis(),
-          amountSpent.value
+          Number(amountSpent.value)
         );
       }
 
-      onLoad();
+      loadData();
       toast.success("Sucesso~!");
     } catch (error) {
       console.error(error);
@@ -105,12 +122,12 @@ const Expenses = () => {
   const deleteExpense = async ({ id }) => {
     try {
       await ExpenseDao.delete(id);
-      onLoad();
+      loadData();
       toast.success("Deleted successfully");
     } catch (error) {
       toast.error("Error while deleting");
     } finally {
-      onLoad();
+      loadData();
     }
   };
 
@@ -129,7 +146,7 @@ const Expenses = () => {
             <Input
               label={"Date"}
               type={"datetime-local"}
-              onChange={(value) => setDate({ error: !value.trim(), value })}
+              onChange={(value) => setDate({ error: !value, value })}
               value={date.value}
               error={date.error}
             />
@@ -138,9 +155,8 @@ const Expenses = () => {
             <Input
               type={"number"}
               label={"Repeat (this entry + value)"}
-              onChange={(value) => setRepeat({ error: !value.trim(), value })}
-              value={repeat.value}
-              error={repeat.error}
+              onChange={setRepeat}
+              value={repeat}
             />
           </div>
         </div>
@@ -167,11 +183,31 @@ const Expenses = () => {
 
         <Button onClick={insertExpense} title="Create new" />
       </div>
+      <div className="border m-2 rounded-lg p-2">
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Input
+              label={"Starting Date"}
+              type={"datetime-local"}
+              onChange={setStartingDate}
+              value={startingDate}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              type={"datetime-local"}
+              label={"Ending Date"}
+              onChange={setEndingDate}
+              value={endingDate}
+            />
+          </div>
+        </div>
+      </div>
       <Table
         list={expenses}
         model={expense}
         onChange={updateExpense}
-        onChangeOrder={onLoad}
+        onChangeOrder={setOrder}
         onDelete={deleteExpense}
       />
     </Page>
