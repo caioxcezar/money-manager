@@ -137,7 +137,7 @@ const Expenses = () => {
         <span className="text-2xl">Create New</span>
         <Input
           label={"Description"}
-          value={description}
+          value={description.value}
           onChange={(value) => setDescription({ error: !value.trim(), value })}
           error={description.error}
         />
