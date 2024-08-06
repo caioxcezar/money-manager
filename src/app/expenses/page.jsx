@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import ExpenseDao from "@/dao/expense";
 import Input from "@/components/input";
 import Button from "@/components/button";
-import Dropdown from "@/components/Dropdown";
+import Dropdown from "@/components/dropdown";
 import CategoryDao from "@/dao/category";
 import _expense from "@/models/expense";
 import { fromMillis, fromString, now } from "@/Utils/dates";
