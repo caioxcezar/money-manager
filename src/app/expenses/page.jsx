@@ -16,7 +16,7 @@ const Expenses = () => {
   const [expense, setExpense] = useState(_expense);
 
   const [description, setDescription] = useState({ value: "", error: true });
-  const [category, setCategory] = useState({ value: {}, error: true });
+  const [category, setCategory] = useState({ value: "1", error: true });
   const [date, setDate] = useState({ value: "", error: true });
   const [amountSpent, setAmount] = useState({ value: "", error: true });
   const [repeat, setRepeat] = useState(0);
@@ -53,7 +53,8 @@ const Expenses = () => {
         })),
       },
     });
-    if (categories.length) setCategory({ error: false, value: categories[0] });
+    if (categories.length)
+      setCategory({ error: false, value: categories[0].id });
   };
 
   const loadData = async () => {
