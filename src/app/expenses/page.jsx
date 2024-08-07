@@ -74,7 +74,7 @@ const Expenses = () => {
 
   const updateExpense = async ({ id, description, category, date, value }) => {
     try {
-      if (!description.trim() || isNaN(date) || !value.trim())
+      if (!description.trim() || isNaN(date) || !`${value}`.trim())
         throw new Error("All fields must have value");
       await ExpenseDao.update(id, description, category, date, Number(value));
       loadData();
