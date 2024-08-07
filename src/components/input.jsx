@@ -21,8 +21,8 @@ const Input = ({
     : "block mb-2 font-medium text-gray-900 dark:text-white text-sm";
 
   const inputStyle = error
-    ? "border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-canvas-lgray focus:border-red-500 block w-full p-2.5 dark:text-red-900 dark:placeholder-red-500 dark:border-red-500"
-    : "block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-canvas-lgray focus:ring-indigo-500 focus:border-indigo-500 dark:bg-canvas-lgray dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500";
+    ? "border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-transparent focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+    : "block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-transparent dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500";
 
   const formatOnChange = (value) => {
     switch (type) {
