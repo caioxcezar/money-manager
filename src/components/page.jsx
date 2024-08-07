@@ -17,7 +17,7 @@ const Page = ({ children, title }) => {
     <main
       className={`flex h-screen bg-white dark:bg-black ${convergence.className}`}
     >
-      <div className=" bg-blue-900/20 rounded-lg m-2 p-2 w-1/4">
+      <div className=" bg-canvas-gray rounded-lg m-2 p-2 w-1/4">
         <ul>
           {pages.map(({ path, title }) => (
             <li key={path} className="bg-blue-500 rounded-lg mb-2 p-2">
@@ -26,7 +26,7 @@ const Page = ({ children, title }) => {
           ))}
         </ul>
       </div>
-      <div className="bg-blue-900/20 rounded-lg m-2 p-2 w-3/4">
+      <div className="bg-canvas-gray rounded-lg m-2 p-2 w-3/4">
         <ToastContainer />
         <span className="text-5xl">{title}</span>
         <div>{children}</div>
