@@ -44,7 +44,7 @@ const Table = ({
       ))}
       {onDelete && (
         <button
-          className="rounded-lg p-2 bg-red-500 font-bold"
+          className="rounded-lg p-2 bg-red-500 hover:bg-red-600 font-bold"
           onClick={() => onDelete(item)}
         >
           &#x1f5d1;
