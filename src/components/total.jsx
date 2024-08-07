@@ -28,7 +28,7 @@ const Total = ({ className, period }) => {
     }
 
     const expenses = await ExpenseDao.getAll(null, range);
-    setValue(expenses.reduce((acc, curr) => acc + curr.value, 0));
+    setValue(expenses.reduce((acc, curr) => acc + Number(curr.value), 0));
   };
 
   return (
