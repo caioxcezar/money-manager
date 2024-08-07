@@ -1,28 +1,28 @@
-import Dropdown from "@/components/dropdown";
 import React, { useEffect, useState } from "react";
 import CanvasJSReact from "@canvasjs/react-charts";
 import { now } from "@/Utils/dates";
 import ExpenseDao from "@/dao/expense";
 import CategoryDao from "@/dao/category";
+import PropTypes from "prop-types";
 
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
-const Pie = () => {
+const Pie = ({ className, period }) => {
   const [pie, setPie] = useState([]);
-  const [option, setOption] = useState([]);
   useEffect(() => {
     onLoad();
-  }, [option]);
+  }, [period]);
 
   const onLoad = async () => {
     let total = 0;
     const pie = {};
     const today = now();
     const range = {
+      column: "date",
       lowerOpen: false,
       upperOpen: false,
     };
 
-    if (option == "2") {
+    if (period == "yearly") {
       range.lower = today.startOf("year").toMillis();
       range.upper = today.endOf("year").toMillis();
     } else {
@@ -30,10 +30,7 @@ const Pie = () => {
       range.upper = today.endOf("month").toMillis();
     }
 
-    const expenses = await ExpenseDao.getRange(
-      { title: "id", order: "next" },
-      range
-    );
+    const expenses = await ExpenseDao.getAll(null, range);
     const categories = await CategoryDao.getAll();
 
     for (const { category, value } of expenses) {
@@ -68,18 +65,15 @@ const Pie = () => {
     ],
   };
   return (
-    <div>
-      <Dropdown
-        className="mb-2"
-        options={[
-          { id: 1, value: "monthly" },
-          { id: 2, value: "yearly" },
-        ]}
-        value={option}
-        onChange={setOption}
-      />
+    <div className={className}>
       <CanvasJSChart options={options} />
     </div>
   );
 };
+
+Pie.propTypes = {
+  className: PropTypes.string,
+  period: PropTypes.string,
+};
+
 export default Pie;

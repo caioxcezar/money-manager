@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { ToastContainer } from "react-toastify";
 import Link from "next/link";
+import { Convergence } from "next/font/google";
 
 const pages = [
   { path: "/", title: "Home" },
@@ -9,9 +10,13 @@ const pages = [
   { path: "/categories", title: "Categories" },
 ];
 
+const convergence = Convergence({ weight: "400", subsets: ["latin"] });
+
 const Page = ({ children, title }) => {
   return (
-    <main className="flex h-screen bg-white dark:bg-black">
+    <main
+      className={`flex h-screen bg-white dark:bg-black ${convergence.className}`}
+    >
       <div className=" bg-blue-900/20 rounded-lg m-2 p-2 w-1/4">
         <ul>
           {pages.map(({ path, title }) => (

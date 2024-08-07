@@ -21,7 +21,7 @@ const Expenses = () => {
   const [amountSpent, setAmount] = useState({ value: "", error: true });
   const [repeat, setRepeat] = useState(0);
 
-  const [order, setOrder] = useState({ title: "id", order: "next" });
+  const [order, setOrder] = useState({ column: "id", direction: "next" });
   const [startingDate, setStartingDate] = useState(now().toMillis());
   const [endingDate, setEndingDate] = useState(now().toMillis());
 
@@ -59,7 +59,8 @@ const Expenses = () => {
 
   const loadData = async () => {
     try {
-      const all = await ExpenseDao.getRange(order, {
+      const all = await ExpenseDao.getAll(order, {
+        column: "date",
         lower: startingDate,
         upper: endingDate,
         lowerOpen: false,

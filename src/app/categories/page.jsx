@@ -19,9 +19,7 @@ const Categories = () => {
 
   const onLoad = async (order) => {
     try {
-      const all = order
-        ? await CategoryDao.getRange(order)
-        : await CategoryDao.getAll();
+      const all = await CategoryDao.getAll(order);
       setCategories(all);
     } catch (error) {
       toast.error(error);
@@ -34,7 +32,7 @@ const Categories = () => {
       onLoad();
       toast.success("Updated successfully");
     } catch (error) {
-      toast.error("Error while updateding");
+      toast.error(`Error while updateding.\n${error.message}`);
     } finally {
       onLoad();
     }
@@ -42,15 +40,25 @@ const Categories = () => {
 
   const deleteCategory = async ({ id }) => {
     try {
-      const expense = await ExpenseDao.getOneByCategory(id);
+      const expense = await ExpenseDao.countBy("category", id);
       if (expense) return toast.error("Cannot delete, category is in use");
       await CategoryDao.delete(id);
       onLoad();
       toast.success("Deleted successfully");
     } catch (error) {
-      toast.error("Error while deleting");
+      toast.error(`Error while deleting.\n${error.message}`);
     } finally {
       onLoad();
+    }
+  };
+
+  const insertCategory = async () => {
+    try {
+      await CategoryDao.insert(categoryName);
+      onLoad();
+      toast.success("Sucesso~!");
+    } catch (error) {
+      toast.error(`Unable to save.\n${error.message}`);
     }
   };
 
@@ -63,20 +71,7 @@ const Categories = () => {
           onChange={setCategoryName}
           value={categoryName}
         />
-        <Button
-          onClick={() =>
-            CategoryDao.insert(categoryName)
-              .then(() => {
-                onLoad();
-                toast.success("Sucesso~!");
-              })
-              .catch((err) => {
-                console.error(err);
-                toast.error("Unable to save");
-              })
-          }
-          title="Create new"
-        />
+        <Button onClick={insertCategory} title="Create new" />
       </div>
       <Table
         list={categories}

@@ -3,18 +3,24 @@ import Database from "./database";
 const db = Database("expenses");
 
 const ExpenseDao = {
-  delete: async (id) => db.remove(id),
-  getOneByCategory: async (id) => db.getOne("category", id),
-  getAll: async (sortedBy) =>
-    sortedBy ? db.getAll(sortedBy) : db.getAllById(),
-  getRange: async (order, range) => {
-    const list = await db.getRange("date", range, "next");
-    return list.sort((a, b) => sort[order.order](a, b, order.title));
+  countBy: (column, key) => db.open().where(column).equals(key).count(),
+  getAll: async (order, range) => {
+    const table = db.open();
+    const list = range
+      ? await table
+          .where(range.column)
+          .between(range.lower, range.upper, range.lowerOpen, range.upperOpen)
+          .toArray()
+      : await table.toArray();
+    return order
+      ? list.sort((a, b) => sort[order.direction](a, b, order.column))
+      : list;
   },
+  delete: async (id) => db.open().delete(id),
   insert: async (description, category, date, value) =>
-    db.put({ description, category, date, value }),
+    db.open().add({ description, category, date, value }),
   update: async (id, description, category, date, value) =>
-    db.put({ id, description, category, date, value }),
+    db.open().update(id, { description, category, date, value }),
 };
 
 const sort = {

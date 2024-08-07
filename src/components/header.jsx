@@ -12,13 +12,13 @@ const Header = ({ headers, onChange }) => {
   const [orderedHeader, setOrderedHeader] = useState(0);
   const [order, setOrder] = useState("next");
 
-  const onClick = (title, id) => {
-    let _order = null;
-    if (orderedHeader == id) _order = order === "next" ? "prev" : "next";
-    else _order = "next";
+  const onClick = (column, id) => {
+    let direction = null;
+    if (orderedHeader == id) direction = order === "next" ? "prev" : "next";
+    else direction = "next";
     setOrderedHeader(id);
-    setOrder(_order);
-    onChange({ title, order: _order });
+    setOrder(direction);
+    onChange({ column, direction: direction });
   };
 
   return headers.map((title, id) => (
