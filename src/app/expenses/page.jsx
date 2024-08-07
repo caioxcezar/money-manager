@@ -74,11 +74,13 @@ const Expenses = () => {
 
   const updateExpense = async ({ id, description, category, date, value }) => {
     try {
-      await ExpenseDao.update(id, description, category, date, value);
+      if (!description.trim() || isNaN(date) || !value.trim())
+        throw new Error("All fields must have value");
+      await ExpenseDao.update(id, description, category, date, Number(value));
       loadData();
       toast.success("Updated successfully");
     } catch (error) {
-      toast.error("Error while updateding");
+      toast.error(`Error while updateding.\n${error.message}`);
     } finally {
       loadData();
     }
@@ -92,7 +94,7 @@ const Expenses = () => {
         date.error ||
         amountSpent.error
       )
-        return toast.error("Fill in all fields");
+        throw new Error("Fill in all fields");
 
       for (let i = 0; i <= repeat; i++) {
         let rDate = fromMillis(date.value);
@@ -110,8 +112,7 @@ const Expenses = () => {
       loadData();
       toast.success("Sucesso~!");
     } catch (error) {
-      console.error(error);
-      toast.error("Unable to save");
+      toast.error(`Unable to save.${error.message}`);
     }
   };
 

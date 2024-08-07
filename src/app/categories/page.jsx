@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
+  const [categoryError, setCategoryError] = useState(true);
 
   useEffect(() => {
     onLoad();
@@ -28,6 +29,7 @@ const Categories = () => {
 
   const updateCategory = async ({ id, description }) => {
     try {
+      if (!description.trim()) throw new Error("Category must have a name");
       await CategoryDao.update(id, description);
       onLoad();
       toast.success("Updated successfully");
@@ -41,12 +43,12 @@ const Categories = () => {
   const deleteCategory = async ({ id }) => {
     try {
       const expense = await ExpenseDao.countBy("category", id);
-      if (expense) return toast.error("Cannot delete, category is in use");
+      if (expense) throw new Error("Cannot delete, category is in use");
       await CategoryDao.delete(id);
       onLoad();
       toast.success("Deleted successfully");
     } catch (error) {
-      toast.error(`Error while deleting.\n${error.message}`);
+      toast.error(`Unable to delete.\n${error.message}`);
     } finally {
       onLoad();
     }
@@ -54,6 +56,7 @@ const Categories = () => {
 
   const insertCategory = async () => {
     try {
+      if (categoryError) throw new Error("Category must have a name");
       await CategoryDao.insert(categoryName);
       onLoad();
       toast.success("Sucesso~!");
@@ -68,8 +71,12 @@ const Categories = () => {
         <span className="text-2xl">Create New</span>
         <Input
           label={"Category name"}
-          onChange={setCategoryName}
+          onChange={(value) => {
+            setCategoryName(value);
+            setCategoryError(!value.trim());
+          }}
           value={categoryName}
+          error={categoryError}
         />
         <Button onClick={insertCategory} title="Create new" />
       </div>
