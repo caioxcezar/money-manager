@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         "canvas-gray": "#2A2A2A",
         "canvas-lgray": "#666666",
+        "purple-900-alt": "#6334DB",
       },
     },
   },

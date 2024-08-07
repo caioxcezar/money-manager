@@ -20,7 +20,10 @@ const Page = ({ children, title }) => {
       <div className=" bg-canvas-gray rounded-lg m-2 p-2 w-1/4">
         <ul>
           {pages.map(({ path, title }) => (
-            <li key={path} className="bg-blue-500 rounded-lg mb-2 p-2">
+            <li
+              key={path}
+              className="bg-purple-900-alt hover:bg-purple-900 rounded-lg mb-2 p-2"
+            >
               <Link href={path}>{title}</Link>
             </li>
           ))}
