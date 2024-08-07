@@ -72,15 +72,9 @@ const Expenses = () => {
     }
   };
 
-  const updateExpense = async ({
-    id,
-    description,
-    category,
-    date,
-    amountSpent,
-  }) => {
+  const updateExpense = async ({ id, description, category, date, value }) => {
     try {
-      await ExpenseDao.update(id, description, category, date, amountSpent);
+      await ExpenseDao.update(id, description, category, date, value);
       loadData();
       toast.success("Updated successfully");
     } catch (error) {
