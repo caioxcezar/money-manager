@@ -42,7 +42,10 @@ const Input = ({
     return value;
   };
 
-  const _onChange = (value) => onChange(formatOnChange(value));
+  const _onChange = ({ target: { value, files } }) => {
+    if (type == "file") onChange(files[0] || null);
+    else onChange(formatOnChange(value));
+  };
 
   const formatValue = () => {
     if (type == "cpf")
@@ -76,7 +79,7 @@ const Input = ({
         className={className || inputStyle}
         placeholder={placeholder}
         value={displayValue}
-        onChange={({ target: { value } }) => _onChange(value)}
+        onChange={_onChange}
         type={type}
         onKeyUp={(event) => {
           if (event.key === "Enter") onSubmit(value);

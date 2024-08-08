@@ -24,6 +24,8 @@ const Database = (table) => {
     return db[table];
   };
 
+  const current = db;
+
   const init = () => {
     const open = db.isOpen();
     if (open) return;
@@ -48,7 +50,7 @@ const Database = (table) => {
     }
   };
 
-  return { open };
+  return { open, current };
 };
 
 export default Database;

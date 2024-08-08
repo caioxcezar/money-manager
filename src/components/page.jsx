@@ -7,6 +7,7 @@ const pages = [
   { path: "/", title: "Home" },
   { path: "/expenses", title: "Expenses" },
   { path: "/categories", title: "Categories" },
+  { path: "/backup", title: "Backup" },
 ];
 
 const Page = ({ children, title }) => {

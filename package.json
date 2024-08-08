@@ -11,6 +11,7 @@
   "dependencies": {
     "@canvasjs/react-charts": "^1.0.2",
     "dexie": "^4.0.8",
+    "dexie-export-import": "^4.1.2",
     "luxon": "^3.4.4",
     "next": "14.2.5",
     "prop-types": "^15.8.1",
