@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 const Button = ({ onClick, title }) => {
   return (
     <button
-      className="bg-purple-900-alt hover:bg-purple-900 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 p-2 rounded-lg text-white"
+      className="bg-purple-900-alt hover:bg-purple-900 active:bg-purple-700 focus:outline-none focus:ring focus:ring-purple-300 p-2 rounded-lg text-white"
       onClick={() => onClick()}
     >
       {title}

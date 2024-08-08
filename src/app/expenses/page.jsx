@@ -10,6 +10,7 @@ import Dropdown from "@/components/dropdown";
 import CategoryDao from "@/dao/category";
 import _expense from "@/models/expense";
 import { fromMillis, fromString, now } from "@/Utils/dates";
+import Group from "@/components/group";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
@@ -96,19 +97,21 @@ const Expenses = () => {
       )
         throw new Error("Fill in all fields");
 
+      const itens = [];
       for (let i = 0; i <= repeat; i++) {
         let rDate = fromMillis(date.value);
         rDate = fromString(rDate);
         rDate = rDate.set({ month: rDate.month + i });
 
-        await ExpenseDao.insert(
-          description.value,
-          category.value,
-          rDate.toMillis(),
-          Number(amountSpent.value)
-        );
+        itens.push({
+          description: description.value,
+          category: category.value,
+          date: rDate.toMillis(),
+          value: Number(amountSpent.value),
+        });
       }
 
+      await ExpenseDao.bulkInsert(itens);
       loadData();
       toast.success("Sucesso~!");
     } catch (error) {
@@ -130,8 +133,7 @@ const Expenses = () => {
 
   return (
     <Page title="Expenses">
-      <div className="border m-2 rounded-lg p-2">
-        <span className="text-2xl">Create New</span>
+      <Group title="Create New">
         <Input
           label={"Description"}
           value={description.value}
@@ -179,8 +181,8 @@ const Expenses = () => {
         </div>
 
         <Button onClick={insertExpense} title="Create new" />
-      </div>
-      <div className="border m-2 rounded-lg p-2">
+      </Group>
+      <Group>
         <div className="flex gap-2">
           <div className="flex-1">
             <Input
@@ -199,7 +201,7 @@ const Expenses = () => {
             />
           </div>
         </div>
-      </div>
+      </Group>
       <Table
         list={expenses}
         model={expense}

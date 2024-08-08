@@ -19,6 +19,7 @@ const ExpenseDao = {
   delete: async (id) => db.open().delete(id),
   insert: async (description, category, date, value) =>
     db.open().add({ description, category, date, value }),
+  bulkInsert: async (itens) => db.open().bulkAdd(itens),
   update: async (id, description, category, date, value) =>
     db.open().update(id, { description, category, date, value }),
 };

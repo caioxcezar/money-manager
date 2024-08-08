@@ -1,5 +1,6 @@
 "use client";
 import Button from "@/components/button";
+import Group from "@/components/group";
 import Input from "@/components/input";
 import Page from "@/components/page";
 import Table from "@/components/table";
@@ -67,8 +68,7 @@ const Categories = () => {
 
   return (
     <Page title="Categories">
-      <div className="border m-2 rounded-lg p-2">
-        <span className="text-2xl">Create New</span>
+      <Group title="Create New">
         <Input
           label={"Category name"}
           onChange={(value) => {
@@ -79,7 +79,7 @@ const Categories = () => {
           error={categoryError}
         />
         <Button onClick={insertCategory} title="Create new" />
-      </div>
+      </Group>
       <Table
         list={categories}
         model={category}
