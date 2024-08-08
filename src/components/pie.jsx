@@ -13,7 +13,6 @@ const Pie = ({ className, period }) => {
   }, [period]);
 
   const onLoad = async () => {
-    let total = 0;
     const pie = {};
     const today = now();
     const range = {
@@ -34,19 +33,15 @@ const Pie = ({ className, period }) => {
     const categories = await CategoryDao.getAll();
 
     for (const { category, value } of expenses) {
-      total += value;
       if (!pie[category]) pie[category] = 0;
       pie[category] += value;
     }
 
     setPie(
-      Object.entries(pie).map(([key, value]) => {
-        const y = ((value * 100) / total).toFixed(2);
-        return {
-          y,
-          label: categories.find(({ id }) => id == key).description,
-        };
-      })
+      Object.entries(pie).map(([key, value]) => ({
+        y: value,
+        label: categories.find(({ id }) => id == key).description,
+      }))
     );
   };
 
@@ -58,7 +53,8 @@ const Pie = ({ className, period }) => {
     data: [
       {
         type: "pie",
-        indexLabel: "{label}: {y}%",
+        indexLabel: "{label} #percent%",
+        yValueFormatString: "R$ ##0.00",
         startAngle: -90,
         dataPoints: pie,
       },
