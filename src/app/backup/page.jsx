@@ -2,10 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Page from "@/components/page";
 import Button from "@/components/button";
-import { exportDB, importInto, peakImportFile } from "dexie-export-import";
 import Database from "@/dao/database";
 import { toast } from "react-toastify";
 import Input from "@/components/input";
+import dynamic from "next/dynamic";
+const { exportDB, importInto, peakImportFile } = dynamic(
+  () => import("dexie-export-import"),
+  { ssr: false }
+);
 
 const Backup = () => {
   const [blob, setBlob] = useState(null);
