@@ -5,11 +5,7 @@ import Button from "@/components/button";
 import Database from "@/dao/database";
 import { toast } from "react-toastify";
 import Input from "@/components/input";
-import dynamic from "next/dynamic";
-const { exportDB, importInto, peakImportFile } = dynamic(
-  () => import("dexie-export-import"),
-  { ssr: false }
-);
+// import { exportDB, importInto, peakImportFile } from "dexie-export-import";
 
 const Backup = () => {
   const [blob, setBlob] = useState(null);
@@ -17,6 +13,7 @@ const Backup = () => {
 
   const exportbackup = async () => {
     try {
+      const { exportDB } = await import("dexie-export-import");
       const db = await Database("").current.open();
       const blob = await exportDB(db);
       Database("").current.close();
@@ -34,12 +31,14 @@ const Backup = () => {
 
   const updateMeta = async () => {
     if (!blob) return;
+    const { peakImportFile } = await import("dexie-export-import");
     const importMeta = await peakImportFile(blob);
     setMeta(importMeta);
   };
 
   const confirm = async () => {
     try {
+      const { importInto } = await import("dexie-export-import");
       const db = await Database("").current;
       await importInto(db, blob, { overwriteValues: true });
       setBlob(null);
