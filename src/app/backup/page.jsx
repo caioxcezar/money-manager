@@ -11,16 +11,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 let loaded = false;
 const Backup = () => {
-  const uri = () => {
-    const url = document.URL;
-    const params = url.indexOf("/backup");
-    if (params == -1) return url;
-    return url.substring(0, params);
-  };
-
-  const redirectUri = () => `${uri()}/backup`;
-
-  const request = useRequest(uri());
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -38,6 +28,15 @@ const Backup = () => {
     loadToken();
     loadOptions();
   }, []);
+
+  const uri = () => {
+    const url = document.URL;
+    const params = url.indexOf("/backup");
+    if (params == -1) return url;
+    return url.substring(0, params);
+  };
+
+  const redirectUri = () => `${uri()}/backup`;
 
   const getToken = async () => {
     const url = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive.file&response_type=code&access_type=offline&redirect_uri=${redirectUri()}&client_id=${
@@ -57,7 +56,8 @@ const Backup = () => {
     const config = localStorage.getItem("configuration");
     if (!config) return;
     const { clientId, clientSecret } = JSON.parse(config);
-    const response = await request.corsRequest(
+    const { corsRequest } = useRequest(uri());
+    const response = await corsRequest(
       "POST",
       "https://oauth2.googleapis.com/token",
       {
@@ -98,7 +98,8 @@ const Backup = () => {
       if (!googleToken || !configuration) throw new Error("No token");
       const jsonToken = JSON.parse(googleToken);
       const jsonConfig = JSON.parse(configuration);
-      const response = await request.post(
+      const { post } = useRequest(uri());
+      const response = await post(
         "/api/upload",
         blob,
         {
@@ -133,7 +134,8 @@ const Backup = () => {
       if (!googleToken || !configuration) throw new Error("No token");
       const jsonToken = JSON.parse(googleToken);
       const jsonConfig = JSON.parse(configuration);
-      const response = await request.post(
+      const { post } = useRequest(uri());
+      const response = await post(
         "/api/download",
         null,
         {
