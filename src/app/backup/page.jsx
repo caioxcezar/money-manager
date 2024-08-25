@@ -31,9 +31,17 @@ const Backup = () => {
     loadOptions();
   }, []);
 
+  const redirectUri = () => {
+    const url = document.url;
+    const params = url.indexOf("?");
+    if (params == -1) return url;
+    return url.substring(0, params);
+  };
+
   const getToken = async () => {
-    const redirect = `${document.location.origin}/backup`;
-    const url = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive.file&response_type=code&access_type=offline&redirect_uri=${redirect}&client_id=${config.clientId}`;
+    const url = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive.file&response_type=code&access_type=offline&redirect_uri=${redirectUri()}&client_id=${
+      config.clientId
+    }`;
     const element = document.createElement("a");
     element.href = url;
     document.body.appendChild(element);
@@ -56,7 +64,7 @@ const Backup = () => {
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: `${document.location.origin}/backup`,
+        redirect_uri: redirectUri(),
       }
     );
     if (response.error) return toast.error(response.error_description);
@@ -101,7 +109,7 @@ const Backup = () => {
           mimeType: blob.type,
           client_id: jsonConfig.clientId,
           client_secret: jsonConfig.clientSecret,
-          redirect_uri: `${document.location.origin}/backup`,
+          redirect_uri: redirectUri(),
           refresh_token: jsonToken.refresh_token,
         },
         true
@@ -135,7 +143,7 @@ const Backup = () => {
         {
           client_id: jsonConfig.clientId,
           client_secret: jsonConfig.clientSecret,
-          redirect_uri: `${document.location.origin}/backup`,
+          redirect_uri: redirectUri(),
           refresh_token: jsonToken.refresh_token,
         },
         true
