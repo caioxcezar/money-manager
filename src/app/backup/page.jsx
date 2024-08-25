@@ -8,11 +8,19 @@ import Input from "@/components/input";
 import useRequest from "@/hooks/useRequest";
 import Checkbox from "@/components/checkbox";
 import { useSearchParams, useRouter } from "next/navigation";
-import { fromMillisToDate, now } from "@/Utils/dates";
 
 let loaded = false;
 const Backup = () => {
-  const request = useRequest();
+  const uri = () => {
+    const url = document.URL;
+    const params = url.indexOf("/backup");
+    if (params == -1) return url;
+    return url.substring(0, params);
+  };
+
+  const redirectUri = () => `${uri()}/backup`;
+
+  const request = useRequest(uri());
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -30,13 +38,6 @@ const Backup = () => {
     loadToken();
     loadOptions();
   }, []);
-
-  const redirectUri = () => {
-    const url = document.URL;
-    const params = url.indexOf("?");
-    if (params == -1) return url;
-    return url.substring(0, params);
-  };
 
   const getToken = async () => {
     const url = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive.file&response_type=code&access_type=offline&redirect_uri=${redirectUri()}&client_id=${
@@ -97,13 +98,8 @@ const Backup = () => {
       if (!googleToken || !configuration) throw new Error("No token");
       const jsonToken = JSON.parse(googleToken);
       const jsonConfig = JSON.parse(configuration);
-      const date = fromMillisToDate(jsonToken["date_expires_in"]).toMillis();
-      if (date < now().toMillis()) {
-        // REFRESH THE TOKEN
-        throw new Error("Expired Token");
-      }
       const response = await request.post(
-        "api/upload",
+        "/api/upload",
         blob,
         {
           mimeType: blob.type,
@@ -138,7 +134,7 @@ const Backup = () => {
       const jsonToken = JSON.parse(googleToken);
       const jsonConfig = JSON.parse(configuration);
       const response = await request.post(
-        "api/download",
+        "/api/download",
         null,
         {
           client_id: jsonConfig.clientId,

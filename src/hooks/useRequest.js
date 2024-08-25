@@ -1,13 +1,13 @@
-const useRequest = () => {
+const useRequest = (host = "") => {
   const get = async (url) => {
-    const res = await fetch(url, {
+    const res = await fetch(host + url, {
       method: "GET",
     });
     return res.json();
   };
 
   const post = async (url, payload, headers, raw = false) => {
-    const res = await fetch(url, {
+    const res = await fetch(host + url, {
       headers,
       method: "POST",
       body:
