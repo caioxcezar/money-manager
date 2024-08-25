@@ -32,7 +32,7 @@ const Backup = () => {
   }, []);
 
   const redirectUri = () => {
-    const url = document.url;
+    const url = document.URL;
     const params = url.indexOf("?");
     if (params == -1) return url;
     return url.substring(0, params);
