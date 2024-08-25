@@ -24,6 +24,13 @@ export const fromMillis = (date) =>
 
 /**
  *
+ * @param {Number} date
+ * @returns {String}
+ */
+export const fromMillisToDate = (date) => DateTime.fromMillis(date);
+
+/**
+ *
  * @returns {DateTime}
  */
 export const now = () => DateTime.now();
