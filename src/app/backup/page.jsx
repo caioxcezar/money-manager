@@ -11,6 +11,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 let loaded = false;
 const Backup = () => {
+  const request = useRequest();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -56,8 +57,8 @@ const Backup = () => {
     const config = localStorage.getItem("configuration");
     if (!config) return;
     const { clientId, clientSecret } = JSON.parse(config);
-    const { corsRequest } = useRequest(uri());
-    const response = await corsRequest(
+    const response = await request.corsRequest(
+      uri(),
       "POST",
       "https://oauth2.googleapis.com/token",
       {
@@ -98,9 +99,8 @@ const Backup = () => {
       if (!googleToken || !configuration) throw new Error("No token");
       const jsonToken = JSON.parse(googleToken);
       const jsonConfig = JSON.parse(configuration);
-      const { post } = useRequest(uri());
-      const response = await post(
-        "/api/upload",
+      const response = await request.post(
+        uri() + "/api/upload",
         blob,
         {
           mimeType: blob.type,
@@ -134,9 +134,8 @@ const Backup = () => {
       if (!googleToken || !configuration) throw new Error("No token");
       const jsonToken = JSON.parse(googleToken);
       const jsonConfig = JSON.parse(configuration);
-      const { post } = useRequest(uri());
-      const response = await post(
-        "/api/download",
+      const response = await request.post(
+        uri() + "/api/download",
         null,
         {
           client_id: jsonConfig.clientId,
