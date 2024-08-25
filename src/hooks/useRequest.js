@@ -25,7 +25,7 @@ const useRequest = () => {
         method,
       })
     );
-    return post("/api/request", payload, undefined, raw);
+    return post((host || "") + "/api/request", payload, undefined, raw);
   };
 
   return { get, post, corsRequest };
