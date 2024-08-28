@@ -16,7 +16,7 @@ const useRequest = () => {
     return res.json();
   };
 
-  const corsRequest = (host, method, url, body, headers, raw = false) => {
+  const corsRequest = (method, url, body, headers, raw = false) => {
     const payload = btoa(
       JSON.stringify({
         url,
@@ -25,7 +25,7 @@ const useRequest = () => {
         method,
       })
     );
-    return post((host || "") + "/api/request", payload, undefined, raw);
+    return post("/api/request", payload, undefined, raw);
   };
 
   return { get, post, corsRequest };

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Page from "@/components/page";
 import Button from "@/components/button";
 import Database from "@/dao/database";
@@ -9,7 +9,6 @@ import useRequest from "@/hooks/useRequest";
 import Checkbox from "@/components/checkbox";
 import { useSearchParams, useRouter } from "next/navigation";
 
-let loaded = false;
 const Backup = () => {
   const request = useRequest();
   const searchParams = useSearchParams();
@@ -17,6 +16,7 @@ const Backup = () => {
 
   const [blob, setBlob] = useState(null);
   const [meta, setMeta] = useState(null);
+  const [hasServer, setHasServer] = useState(false);
   const [config, setConfig] = useState({
     gdrive: false,
     clientId: "",
@@ -24,8 +24,7 @@ const Backup = () => {
   });
 
   useEffect(() => {
-    if (loaded) return;
-    loaded = true;
+    checkServer();
     loadToken();
     loadOptions();
   }, []);
@@ -38,6 +37,12 @@ const Backup = () => {
   };
 
   const redirectUri = () => `${uri()}/backup`;
+
+  const checkServer = async () =>
+    request
+      .post("/api/ping")
+      .then(() => setHasServer(true))
+      .catch(() => setHasServer(false));
 
   const getToken = async () => {
     const url = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive.file&response_type=code&access_type=offline&redirect_uri=${redirectUri()}&client_id=${
@@ -58,7 +63,6 @@ const Backup = () => {
     if (!config) return;
     const { clientId, clientSecret } = JSON.parse(config);
     const response = await request.corsRequest(
-      uri(),
       "POST",
       "https://oauth2.googleapis.com/token",
       {
@@ -85,7 +89,7 @@ const Backup = () => {
       const db = await Database("").current.open();
       const blob = await exportDB(db);
       Database("").current.close();
-      if (config.gdrive) await exportGoogle(blob);
+      if (gdrive) await exportGoogle(blob);
       else downloadDB(blob);
     } catch (error) {
       toast.error(error.message);
@@ -100,7 +104,7 @@ const Backup = () => {
       const jsonToken = JSON.parse(googleToken);
       const jsonConfig = JSON.parse(configuration);
       const response = await request.post(
-        uri() + "/api/upload",
+        "/api/upload",
         blob,
         {
           mimeType: blob.type,
@@ -135,7 +139,7 @@ const Backup = () => {
       const jsonToken = JSON.parse(googleToken);
       const jsonConfig = JSON.parse(configuration);
       const response = await request.post(
-        uri() + "/api/download",
+        "/api/download",
         null,
         {
           client_id: jsonConfig.clientId,
@@ -182,15 +186,23 @@ const Backup = () => {
     localStorage.setItem("configuration", JSON.stringify(_config));
   };
 
+  const gdrive = useMemo(() => config.gdrive && hasServer, [config, hasServer]);
+
   return (
     <Page title="Backup and Restore">
       <div className=" mt-4 flex flex-col gap-2">
-        <Checkbox
-          value={config.gdrive}
-          label="Export database to Google Drive"
-          onChange={(value) => updateConfig("gdrive", value)}
-        />
-        {config.gdrive && (
+        {hasServer ? (
+          <Checkbox
+            value={config.gdrive}
+            label="Export database to Google Drive"
+            onChange={(value) => updateConfig("gdrive", value)}
+          />
+        ) : (
+          <div className="text-red-500">
+            Não possui conexão com o servidor. Google Drive desabilitado
+          </div>
+        )}
+        {gdrive && (
           <>
             <Input
               label="Client Id"
@@ -215,7 +227,7 @@ const Backup = () => {
         )}
         <Button title="Export Database" onClick={exportbackup} />
         <Input label="Import Database" type="file" onChange={importbackup} />
-        {config.gdrive && (
+        {gdrive && (
           <Button
             title="Import Database From GDrive"
             onClick={importbackupgdrive}
