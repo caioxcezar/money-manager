@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Page from "@/components/page";
 import Table from "@/components/table";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ import CategoryDao from "@/dao/category";
 import _expense from "@/models/expense";
 import { fromMillis, fromString, now } from "@/Utils/dates";
 import Group from "@/components/group";
+import Fuse from "fuse.js";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
@@ -22,23 +23,31 @@ const Expenses = () => {
   const [amountSpent, setAmount] = useState({ value: "", error: true });
   const [repeat, setRepeat] = useState(0);
 
-  const [order, setOrder] = useState({ column: "id", direction: "next" });
-  const [startingDate, setStartingDate] = useState(now().toMillis());
-  const [endingDate, setEndingDate] = useState(now().toMillis());
+  const [order, setOrder] = useState({ column: "date", direction: "next" });
+
+  const [filter, _setFilter] = useState({
+    startingDate: now().toMillis(),
+    endingDate: now().toMillis(),
+    description: "",
+    category: "-1",
+  });
+  const setFilter = (values) => _setFilter({ ...filter, ...values });
 
   useEffect(() => {
     loadCategories();
-    setFilter();
+    setFilterValues();
   }, []);
 
   useEffect(() => {
     loadData();
-  }, [startingDate, endingDate, order]);
+  }, [filter, order]);
 
-  const setFilter = () => {
+  const setFilterValues = () => {
     const today = now();
-    setStartingDate(today.startOf("month").toMillis());
-    setEndingDate(today.endOf("month").toMillis());
+    setFilter({
+      startingDate: today.startOf("month").toMillis(),
+      endingDate: today.endOf("month").toMillis(),
+    });
   };
 
   const loadCategories = async () => {
@@ -60,13 +69,20 @@ const Expenses = () => {
 
   const loadData = async () => {
     try {
-      const all = await ExpenseDao.getAll(order, {
+      let all = await ExpenseDao.getAll(order, {
         column: "date",
-        lower: startingDate,
-        upper: endingDate,
+        lower: filter.startingDate,
+        upper: filter.endingDate,
         lowerOpen: false,
         upperOpen: false,
       });
+      if (filter.description.trim()) {
+        const fuse = new Fuse(all, { keys: ["description"] });
+        all = fuse.search(filter.description).map(({ item }) => item);
+      }
+      if (filter.category != "-1") {
+        all = all.filter(({ category }) => category == filter.category);
+      }
       setExpenses(all);
     } catch (error) {
       toast.error(error);
@@ -131,6 +147,17 @@ const Expenses = () => {
     }
   };
 
+  const { categories, filterCategories } = useMemo(() => {
+    const categories = expense.category.values || [];
+    return {
+      categories,
+      filterCategories: [
+        { id: "-1", value: "Select the category" },
+        ...categories,
+      ],
+    };
+  }, [expense]);
+
   return (
     <Page title="Expenses">
       <Group title="Create New">
@@ -164,7 +191,7 @@ const Expenses = () => {
             <Dropdown
               text="Select the category"
               value={category.value}
-              options={expense.category.values || []}
+              options={categories}
               onChange={(value) => setCategory({ error: false, value })}
               error={category.error}
             />
@@ -182,22 +209,39 @@ const Expenses = () => {
 
         <Button onClick={insertExpense} title="Create new" />
       </Group>
-      <Group>
+      <Group title="Filter">
         <div className="flex gap-2">
           <div className="flex-1">
             <Input
               label={"Starting Date"}
               type={"datetime-local"}
-              onChange={setStartingDate}
-              value={startingDate}
+              onChange={(startingDate) => setFilter({ startingDate })}
+              value={filter.startingDate}
             />
           </div>
           <div className="flex-1">
             <Input
               type={"datetime-local"}
               label={"Ending Date"}
-              onChange={setEndingDate}
-              value={endingDate}
+              onChange={(endingDate) => setFilter({ endingDate })}
+              value={filter.endingDate}
+            />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Dropdown
+              text="Select the category"
+              value={filter.category}
+              options={filterCategories}
+              onChange={(category) => setFilter({ category })}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              label={"Description"}
+              value={filter.description}
+              onChange={(description) => setFilter({ description })}
             />
           </div>
         </div>
@@ -208,6 +252,7 @@ const Expenses = () => {
         onChange={updateExpense}
         onChangeOrder={setOrder}
         onDelete={deleteExpense}
+        initialSort={order}
       />
     </Page>
   );

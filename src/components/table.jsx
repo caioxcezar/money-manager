@@ -9,6 +9,7 @@ const Table = ({
   model,
   onChange,
   onDelete,
+  initialSort,
   onChangeOrder = () => null,
 }) => {
   const [editing, setEditing] = useState({});
@@ -23,7 +24,13 @@ const Table = ({
   };
 
   const header = useMemo(
-    () => <Header headers={Object.keys(model)} onChange={onChangeOrder} />,
+    () => (
+      <Header
+        headers={Object.keys(model)}
+        initialSort={initialSort}
+        onChange={onChangeOrder}
+      />
+    ),
     [model]
   );
 
@@ -70,5 +77,6 @@ Table.propTypes = {
   onChange: PropTypes.func,
   onDelete: PropTypes.func,
   onChangeOrder: PropTypes.func,
+  initialSort: PropTypes.object,
 };
 export default Table;

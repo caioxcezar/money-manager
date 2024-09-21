@@ -8,9 +8,11 @@ const icon = {
   _: null,
 };
 
-const Header = ({ headers, onChange }) => {
-  const [orderedHeader, setOrderedHeader] = useState(0);
-  const [order, setOrder] = useState("next");
+const Header = ({ headers, onChange, initialSort = {} }) => {
+  const [orderedHeader, setOrderedHeader] = useState(
+    headers.findIndex((header) => header == initialSort.column) || 0
+  );
+  const [order, setOrder] = useState(initialSort.direction ?? "next");
 
   const onClick = (column, id) => {
     let direction = null;
