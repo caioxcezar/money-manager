@@ -1,8 +1,14 @@
+import { DateTime } from "luxon";
 import Database from "./database";
 
 const db = Database("expenses");
 
 const ExpenseDao = {
+  getInitialDate: async () => {
+    const row = await db.open().orderBy("date").first();
+    if (row) return DateTime.fromMillis(row.date).toFormat("yyyy");
+    return DateTime.local().toFormat("yyyy");
+  },
   countBy: (column, key) => db.open().where(column).equals(key).count(),
   getAll: async (order, range) => {
     const table = db.open();

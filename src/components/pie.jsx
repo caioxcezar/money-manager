@@ -1,35 +1,17 @@
 import React, { useEffect, useState } from "react";
 import CanvasJSReact from "@canvasjs/react-charts";
-import { now } from "@/Utils/dates";
-import ExpenseDao from "@/dao/expense";
 import CategoryDao from "@/dao/category";
 import PropTypes from "prop-types";
 
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
-const Pie = ({ className, period }) => {
+const Pie = ({ className, expenses }) => {
   const [pie, setPie] = useState([]);
   useEffect(() => {
     onLoad();
-  }, [period]);
+  }, [expenses]);
 
   const onLoad = async () => {
     const pie = {};
-    const today = now();
-    const range = {
-      column: "date",
-      lowerOpen: false,
-      upperOpen: false,
-    };
-
-    if (period == "yearly") {
-      range.lower = today.startOf("year").toMillis();
-      range.upper = today.endOf("year").toMillis();
-    } else {
-      range.lower = today.startOf("month").toMillis();
-      range.upper = today.endOf("month").toMillis();
-    }
-
-    const expenses = await ExpenseDao.getAll(null, range);
     const categories = await CategoryDao.getAll();
 
     for (const { category, value } of expenses) {
@@ -69,7 +51,7 @@ const Pie = ({ className, period }) => {
 
 Pie.propTypes = {
   className: PropTypes.string,
-  period: PropTypes.string,
+  expenses: PropTypes.array,
 };
 
 export default Pie;
