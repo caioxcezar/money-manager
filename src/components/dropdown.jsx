@@ -22,14 +22,11 @@ const Dropdown = ({
       {text && <label className={labelStyle}>{text}</label>}
       <select
         className={inputStyle}
+        value={value}
         onChange={({ target: { value } }) => onChange(value)}
       >
         {options.map((option) => (
-          <option
-            key={option.id}
-            selected={value == option.id}
-            value={option.id}
-          >
+          <option key={option.id} value={option.id}>
             {option.value}
           </option>
         ))}

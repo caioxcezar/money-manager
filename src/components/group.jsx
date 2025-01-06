@@ -4,9 +4,11 @@ import Button from "./button";
 const Group = ({ title, children, initialOpen = false }) => {
   const [isOpen, setOpen] = useState(initialOpen);
   return (
-    <div className="border border-black dark:border-white m-2 rounded-lg p-2">
-      <div className="flex justify-between">
-        {title ? <span className="text-2xl">{title}</span> : <div></div>}
+    <div className="border border-black dark:border-white my-2 rounded-lg p-2">
+      <div className="flex">
+        {!!title && (
+          <div className="text-2xl flex items-center w-full">{title}</div>
+        )}
         <Button
           title={isOpen ? "Close" : "Open"}
           onClick={() => setOpen(!isOpen)}

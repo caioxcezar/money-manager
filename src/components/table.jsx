@@ -23,26 +23,29 @@ const Table = ({
     onChange(aux[idx]);
   };
 
-  const header = useMemo(
-    () => (
+  const header = useMemo(() => {
+    let headers = Object.keys(model);
+    if (onDelete) headers.push("Action");
+    return (
       <Header
-        headers={Object.keys(model)}
+        headers={headers}
         initialSort={initialSort}
         onChange={onChangeOrder}
       />
-    ),
-    [model]
-  );
+    );
+  }, [model]);
 
   const body = list.map((item, idx) => (
-    <tr key={item}>
+    <tr
+      key={item}
+      className="odd:bg-tb-row-odd even:bg-tb-row-even border-b dark:border-gray-700"
+    >
       {Object.entries(model).map(([key, { type, readonly, values }]) => (
         <Cell
           key={key}
-          type={type}
+          type={readonly ? "text" : type}
           dropdownValue={values || []}
           value={editing[`${idx}.${key}`] ?? item[key]}
-          disabled={readonly}
           placeholder={key}
           onChange={(value) => onChangeValue(idx, key, value)}
           onSubmit={(value) => onSubmit(value, idx, key)}
@@ -50,24 +53,28 @@ const Table = ({
         />
       ))}
       {onDelete && (
-        <button
-          className="rounded-lg p-2 bg-red-500 hover:bg-red-600 font-bold"
-          onClick={() => onDelete(item)}
-        >
-          &#x1f5d1;
-        </button>
+        <td className="px-3 whitespace-nowrap">
+          <button
+            className="rounded-lg p-2 bg-red-500 hover:bg-red-600 font-bold"
+            onClick={() => onDelete(item)}
+          >
+            &#x1f5d1;
+          </button>
+        </td>
       )}
     </tr>
   ));
 
   if (!list.length) return <div>Tabela Vazia</div>;
   return (
-    <table className="table-auto w-full text-left">
-      <thead>
-        <tr>{header}</tr>
-      </thead>
-      <tbody>{body}</tbody>
-    </table>
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg border">
+      <table className="w-full text-sm text-left rtl:text-right">
+        <thead className="text-xs uppercase">
+          <tr>{header}</tr>
+        </thead>
+        <tbody>{body}</tbody>
+      </table>
+    </div>
   );
 };
 

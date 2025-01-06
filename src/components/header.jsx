@@ -24,7 +24,7 @@ const Header = ({ headers, onChange, initialSort = {} }) => {
   };
 
   return headers.map((title, id) => (
-    <th key={title}>
+    <th key={title} className="px-3 py-3" scope="col">
       <button
         className="grid grid-cols-2 place-content-between w-full"
         onClick={() => onClick(title, id)}

@@ -23,7 +23,7 @@ const Expenses = () => {
   const [amountSpent, setAmount] = useState({ value: "", error: true });
   const [repeat, setRepeat] = useState(0);
 
-  const [order, setOrder] = useState({ column: "date", direction: "next" });
+  const [order, setOrder] = useState({ column: "date", direction: "prev" });
 
   const [filter, _setFilter] = useState({
     startingDate: now().toMillis(),
