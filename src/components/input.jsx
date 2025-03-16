@@ -33,7 +33,7 @@ const Input = ({
         value = value.replace(/[^0-9.]/g, "");
         break;
       case "number":
-        value = Number(value.replace(/[^0-9.]/g, ""));
+        value = Number(value.replace(/[^0-9.]/g, "").replace(/,/, "."));
         break;
       case "datetime-local":
         value = toMillis(value);
