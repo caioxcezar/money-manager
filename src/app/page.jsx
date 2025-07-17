@@ -1,34 +1,39 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Page from "@/components/page";
 import dynamic from "next/dynamic";
 import Dropdown from "@/components/dropdown";
 import Total from "@/components/total";
 import ExpenseDao from "@/dao/expense";
-import { fromString, now } from "@/Utils/dates";
+import { fromString, now } from "@/utils/dates";
+import { useTranslations } from "next-intl";
 const Pie = dynamic(() => import("@/components/pie"), { ssr: false });
 
-const months = [
-  { id: "01", value: "January" },
-  { id: "02", value: "February" },
-  { id: "03", value: "March" },
-  { id: "04", value: "April" },
-  { id: "05", value: "May" },
-  { id: "06", value: "June" },
-  { id: "07", value: "July" },
-  { id: "08", value: "August" },
-  { id: "09", value: "September" },
-  { id: "10", value: "October" },
-  { id: "11", value: "November" },
-  { id: "12", value: "December" },
-];
-const dateSpan = [
-  { id: 1, value: "monthly" },
-  { id: 2, value: "yearly" },
-];
 const Home = () => {
+  const t = useTranslations("home");
+
+  const dateSpan = useRef([
+    { id: 1, value: t("mode_monthly") },
+    { id: 2, value: t("mode_yearly") },
+  ]).current;
+
+  const months = useRef([
+    { id: "01", value: t("january") },
+    { id: "02", value: t("february") },
+    { id: "03", value: t("march") },
+    { id: "04", value: t("april") },
+    { id: "05", value: t("may") },
+    { id: "06", value: t("june") },
+    { id: "07", value: t("july") },
+    { id: "08", value: t("august") },
+    { id: "09", value: t("september") },
+    { id: "10", value: t("october") },
+    { id: "11", value: t("november") },
+    { id: "12", value: t("december") },
+  ]).current;
+
   const [years, setYears] = useState([]);
-  const [option, setOption] = useState("monthly");
+  const [option, setOption] = useState(1);
   const [expenses, setExpenses] = useState([]);
   const [date, setDate] = useState({
     month: months.find(({ id }) => now().toFormat("MM") == id)?.id || 1,
@@ -59,7 +64,7 @@ const Home = () => {
       upperOpen: false,
     };
 
-    if (option == "yearly") {
+    if (option == 2) {
       const lower = fromString(`${date.year}-01-01T00:00:00.000`);
       range.lower = lower.toMillis();
       range.upper = lower.endOf("year").toMillis();
@@ -77,21 +82,21 @@ const Home = () => {
     <Page>
       <div className="flex gap-2 mb-2">
         <Dropdown
-          text="Select Option"
+          text={t("select_mode")}
           options={dateSpan}
           value={option}
-          onChange={(value) => setOption(value == 1 ? "monthly" : "yearly")}
+          onChange={setOption}
         />
-        {option == "monthly" && (
+        {option == 1 && (
           <Dropdown
-            text="Select Month"
+            text={t("select_mouth")}
             options={months}
             value={date.month}
             onChange={(month) => setDate({ year: date.year, month })}
           />
         )}
         <Dropdown
-          text="Select Year"
+          text={t("select_year")}
           options={years}
           value={date.year}
           onChange={(year) => setDate({ year, month: date.month })}

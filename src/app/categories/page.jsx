@@ -7,10 +7,13 @@ import Table from "@/components/table";
 import CategoryDao from "@/dao/category";
 import ExpenseDao from "@/dao/expense";
 import category from "@/models/category";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const Categories = () => {
+  const t = useTranslations("categories");
+
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [categoryError, setCategoryError] = useState(true);
@@ -30,12 +33,12 @@ const Categories = () => {
 
   const updateCategory = async ({ id, description }) => {
     try {
-      if (!description.trim()) throw new Error("Category must have a name");
+      if (!description.trim()) throw new Error(t("msg_empty_category"));
       await CategoryDao.update(id, description);
       onLoad();
-      toast.success("Updated successfully");
+      toast.success(t("msg_updated_success"));
     } catch (error) {
-      toast.error(`Error while updateding.\n${error.message}`);
+      toast.error(`${t("msg_update_error")}.\n${error.message}`);
     } finally {
       onLoad();
     }
@@ -44,12 +47,12 @@ const Categories = () => {
   const deleteCategory = async ({ id }) => {
     try {
       const expense = await ExpenseDao.countBy("category", id);
-      if (expense) throw new Error("Cannot delete, category is in use");
+      if (expense) throw new Error(t("msg_not_empty_category"));
       await CategoryDao.delete(id);
       onLoad();
-      toast.success("Deleted successfully");
+      toast.success(t("msg_deleted_success"));
     } catch (error) {
-      toast.error(`Unable to delete.\n${error.message}`);
+      toast.error(`${t("msg_deleted_failed")}.\n${error.message}`);
     } finally {
       onLoad();
     }
@@ -57,20 +60,20 @@ const Categories = () => {
 
   const insertCategory = async () => {
     try {
-      if (categoryError) throw new Error("Category must have a name");
+      if (categoryError) throw new Error(t("msg_empty_category"));
       await CategoryDao.insert(categoryName);
       onLoad();
-      toast.success("Sucesso~!");
+      toast.success(t("msg_insert_success"));
     } catch (error) {
-      toast.error(`Unable to save.\n${error.message}`);
+      toast.error(`${"msg_insert_error"}.\n${error.message}`);
     }
   };
 
   return (
-    <Page title="Categories">
-      <Group title="Create New">
+    <Page title={t("title")}>
+      <Group title={t("group_new_title")}>
         <Input
-          label={"Category name"}
+          label={t("input_category")}
           onChange={(value) => {
             setCategoryName(value);
             setCategoryError(!value.trim());
@@ -78,7 +81,7 @@ const Categories = () => {
           value={categoryName}
           error={categoryError}
         />
-        <Button onClick={insertCategory} title="Create new" />
+        <Button onClick={insertCategory} title={t("button_new")} />
       </Group>
       <Table
         list={categories}

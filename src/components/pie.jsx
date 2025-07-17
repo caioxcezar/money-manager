@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import CanvasJSReact from "@canvasjs/react-charts";
 import CategoryDao from "@/dao/category";
 import PropTypes from "prop-types";
+import { useTranslations } from "next-intl";
 
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 const Pie = ({ className, expenses }) => {
+  const t = useTranslations("home");
+
   const [pie, setPie] = useState([]);
   useEffect(() => {
     onLoad();
@@ -31,7 +34,7 @@ const Pie = ({ className, expenses }) => {
     animationEnabled: true,
     exportEnabled: true,
     theme: "dark1",
-    title: { text: "Expenses" },
+    title: { text: t("cavas_expenses_title") },
     data: [
       {
         type: "pie",

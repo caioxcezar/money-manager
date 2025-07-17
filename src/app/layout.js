@@ -3,6 +3,7 @@ import { Convergence } from "next/font/google";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import PropTypes from "prop-types";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata = {
   title: "Money Manager",
@@ -13,7 +14,9 @@ const convergence = Convergence({ weight: "400", subsets: ["latin"] });
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={convergence.className}>{children}</body>
+      <body className={convergence.className}>
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+      </body>
     </html>
   );
 }

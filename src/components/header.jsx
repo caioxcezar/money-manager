@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { firstUppercase } from "@/Utils/strings";
+import { firstUppercase } from "@/utils/strings";
 import PropTypes from "prop-types";
 
 const icon = {

@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useRef } from "react";
 import PropTypes from "prop-types";
 import { ToastContainer } from "react-toastify";
 import Link from "next/link";
-
-const pages = [
-  { path: "/", title: "Home" },
-  { path: "/expenses", title: "Expenses" },
-  { path: "/categories", title: "Categories" },
-  { path: "/backup", title: "Backup" },
-];
+import { useTranslations } from "next-intl";
 
 const Page = ({ children, title }) => {
+  const t = useTranslations("panel");
+
+  const pages = useRef([
+    { path: "/", title: t("home") },
+    { path: "/expenses", title: t("expenses") },
+    { path: "/categories", title: t("categories") },
+    { path: "/backup", title: t("backup") },
+  ]).current;
+
   return (
     <main className={"flex bg-canvas-lgray dark:bg-black"}>
       <div className="ms-2 me-4 w-1/6 h-screen">

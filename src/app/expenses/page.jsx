@@ -9,11 +9,14 @@ import Button from "@/components/button";
 import Dropdown from "@/components/dropdown";
 import CategoryDao from "@/dao/category";
 import _expense from "@/models/expense";
-import { fromMillis, fromString, now } from "@/Utils/dates";
+import { fromMillis, fromString, now } from "@/utils/dates";
 import Group from "@/components/group";
 import Fuse from "fuse.js";
+import { useTranslations } from "next-intl";
 
 const Expenses = () => {
+  const t = useTranslations("expenses");
+
   const [expenses, setExpenses] = useState([]);
   const [expense, setExpense] = useState(_expense);
 
@@ -129,9 +132,9 @@ const Expenses = () => {
 
       await ExpenseDao.bulkInsert(itens);
       loadData();
-      toast.success("Sucesso~!");
+      toast.success(t("saved_success"));
     } catch (error) {
-      toast.error(`Unable to save.${error.message}`);
+      toast.error(`${t("saved_failed")}.\n${error.message}`);
     }
   };
 
@@ -139,9 +142,9 @@ const Expenses = () => {
     try {
       await ExpenseDao.delete(id);
       loadData();
-      toast.success("Deleted successfully");
+      toast.success(t("deleted_success"));
     } catch (error) {
-      toast.error("Error while deleting");
+      toast.error(`${t("deleted_failed")}.\n${error.message}`);
     } finally {
       loadData();
     }
@@ -151,18 +154,15 @@ const Expenses = () => {
     const categories = expense.category.values || [];
     return {
       categories,
-      filterCategories: [
-        { id: "-1", value: "Select the category" },
-        ...categories,
-      ],
+      filterCategories: [{ id: "-1", value: "..." }, ...categories],
     };
   }, [expense]);
 
   return (
-    <Page title="Expenses">
-      <Group title="Create New">
+    <Page title={t("title")}>
+      <Group title={t("group_new_title")}>
         <Input
-          label={"Description"}
+          label={t("input_description")}
           value={description.value}
           onChange={(value) => setDescription({ error: !value.trim(), value })}
           error={description.error}
@@ -170,7 +170,7 @@ const Expenses = () => {
         <div className="flex gap-2">
           <div className="flex-1">
             <Input
-              label={"Date"}
+              label={t("input_date")}
               type={"datetime-local"}
               onChange={(value) => setDate({ error: !value, value })}
               value={date.value}
@@ -180,7 +180,7 @@ const Expenses = () => {
           <div className="flex-1">
             <Input
               type={"number"}
-              label={"Repeat (this entry + value)"}
+              label={t("input_repeat")}
               onChange={setRepeat}
               value={repeat}
             />
@@ -189,7 +189,7 @@ const Expenses = () => {
         <div className="flex gap-2">
           <div className="flex-1">
             <Dropdown
-              text="Select the category"
+              text={t("select_category")}
               value={category.value}
               options={categories}
               onChange={(value) => setCategory({ error: false, value })}
@@ -199,7 +199,7 @@ const Expenses = () => {
           <div className="flex-1">
             <Input
               type={"money"}
-              label={"Amount Spent"}
+              label={t("input_money")}
               onChange={(value) => setAmount({ error: !value.trim(), value })}
               value={amountSpent.value}
               error={amountSpent.error}
@@ -207,13 +207,13 @@ const Expenses = () => {
           </div>
         </div>
 
-        <Button onClick={insertExpense} title="Create new" />
+        <Button onClick={insertExpense} title={t("button_new")} />
       </Group>
-      <Group title="Filter">
+      <Group title={t("group_filter_title")}>
         <div className="flex gap-2">
           <div className="flex-1">
             <Input
-              label={"Starting Date"}
+              label={t("input_start_date")}
               type={"datetime-local"}
               onChange={(startingDate) => setFilter({ startingDate })}
               value={filter.startingDate}
@@ -222,7 +222,7 @@ const Expenses = () => {
           <div className="flex-1">
             <Input
               type={"datetime-local"}
-              label={"Ending Date"}
+              label={t("input_end_date")}
               onChange={(endingDate) => setFilter({ endingDate })}
               value={filter.endingDate}
             />
@@ -231,7 +231,7 @@ const Expenses = () => {
         <div className="flex gap-2">
           <div className="flex-1">
             <Dropdown
-              text="Select the category"
+              text={t("select_category")}
               value={filter.category}
               options={filterCategories}
               onChange={(category) => setFilter({ category })}
@@ -239,7 +239,7 @@ const Expenses = () => {
           </div>
           <div className="flex-1">
             <Input
-              label={"Description"}
+              label={t("input_description")}
               value={filter.description}
               onChange={(description) => setFilter({ description })}
             />

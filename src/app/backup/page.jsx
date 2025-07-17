@@ -8,8 +8,10 @@ import Input from "@/components/input";
 import useRequest from "@/hooks/useRequest";
 import Checkbox from "@/components/checkbox";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const Backup = () => {
+  const t = useTranslations("backup");
   const request = useRequest();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -189,68 +191,74 @@ const Backup = () => {
   const gdrive = useMemo(() => config.gdrive && hasServer, [config, hasServer]);
 
   return (
-    <Page title="Backup and Restore">
+    <Page title={t("title")}>
       <div className=" mt-4 flex flex-col gap-2">
         {hasServer ? (
           <Checkbox
             value={config.gdrive}
-            label="Export database to Google Drive"
+            label={t("checkbox_gdrive")}
             onChange={(value) => updateConfig("gdrive", value)}
           />
         ) : (
-          <div className="text-red-500">
-            Não possui conexão com o servidor. Google Drive desabilitado
-          </div>
+          <div className="text-red-500">{t("gdrive_missing_alert")}</div>
         )}
         {gdrive && (
           <>
             <Input
-              label="Client Id"
+              label={t("input_client_id")}
               placeholder="asdfjasdljfasdkjf"
               value={config.clientId}
               onChange={(value) => updateConfig("clientId", value)}
             />
             <Input
-              label="Client Secret"
+              label={t("input_client_secret")}
               placeholder="1912308409123890"
               value={config.clientSecret}
               onChange={(value) => updateConfig("clientSecret", value)}
             />
-            <Button title="Get Token" onClick={getToken} />
+            <Button title={t("button_token")} onClick={getToken} />
 
             {localStorage.getItem("google-token") ? (
-              <span className="text-green-500">This app has saved token</span>
+              <span className="text-green-500">{t("msg_has_saved_token")}</span>
             ) : (
-              <span className="text-red-500">This app dont have token</span>
+              <span className="text-red-500">
+                {t("msg_dont_have_saved_token")}
+              </span>
             )}
           </>
         )}
-        <Button title="Export Database" onClick={exportbackup} />
-        <Input label="Import Database" type="file" onChange={importbackup} />
+        <Button title={t("button_export")} onClick={exportbackup} />
+        <Input label={t("button_import")} type="file" onChange={importbackup} />
         {gdrive && (
           <Button
-            title="Import Database From GDrive"
+            title={t("button_gdrive_import")}
             onClick={importbackupgdrive}
           />
         )}
       </div>
       {meta && (
         <div className="mt-2">
-          <p className="text-2xl">Database Name: {meta.data.databaseName}</p>
           <p className="text-2xl">
-            Database Version: {meta.data.databaseVersion}
+            {t("msg_db_name")}: {meta.data.databaseName}
           </p>
-          <p className="text-xl w-100">Tables: </p>
+          <p className="text-2xl">
+            {t("msg_db_version")}: {meta.data.databaseVersion}
+          </p>
+          <p className="text-xl w-100">{t("msg_db_tables")}: </p>
           <div className="flex gap-2">
             {meta.data.tables.map((table) => (
               <div key={table.name} className="p-2 border rounded-xl">
-                <p>Name: {table.name}</p>
-                <p>Rows: {table.rowCount}</p>
+                <p>
+                  {t("msg_tb_name")}: {table.name}
+                </p>
+                <p>
+                  {t("msg_tb_rows")}: {table.rowCount}
+                </p>
               </div>
             ))}
           </div>
-          <p className="text-xl w-100">Are you sure?</p>
-          <Button title="Confirm" onClick={confirm} />
+          <p className="text-xl w-100">{t("msg_confirm")}</p>
+          <Button title={t("button_confirm")} onClick={confirm} />
         </div>
       )}
     </Page>

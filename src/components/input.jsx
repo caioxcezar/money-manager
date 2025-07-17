@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { fromMillis, toMillis } from "@/Utils/dates";
+import { fromMillis, toMillis } from "@/utils/dates";
 
 const CURRENCE = "R$";
 
