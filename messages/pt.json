@@ -3,7 +3,8 @@
     "home": "Início",
     "expenses": "Despesas",
     "categories": "Categorias",
-    "backup": "Backup"
+    "backup": "Backup",
+    "select_language": "Idioma:"
   },
   "home": {
     "select_mode": "Selecione Tipo",

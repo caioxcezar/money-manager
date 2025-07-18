@@ -7,7 +7,8 @@ import { toast } from "react-toastify";
 import Input from "@/components/input";
 import useRequest from "@/hooks/useRequest";
 import Checkbox from "@/components/checkbox";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
 const Backup = () => {

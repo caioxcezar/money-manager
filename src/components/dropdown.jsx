@@ -8,6 +8,7 @@ const Dropdown = ({
   value,
   error,
   className,
+  disabled,
 }) => {
   const labelStyle = error
     ? "block mb-2 text-sm font-medium text-red-700 dark:text-red-400"
@@ -23,6 +24,7 @@ const Dropdown = ({
       <select
         className={inputStyle}
         value={value}
+        disabled={disabled}
         onChange={({ target: { value } }) => onChange(value)}
       >
         {options.map((option) => (
@@ -41,6 +43,7 @@ Dropdown.propTypes = {
   text: PropTypes.string,
   value: PropTypes.object,
   error: PropTypes.bool,
+  disabled: PropTypes.bool,
 };
 
 export default Dropdown;

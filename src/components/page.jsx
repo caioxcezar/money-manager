@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import PropTypes from "prop-types";
 import { ToastContainer } from "react-toastify";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import LocaleDropdown from "./LocaleDropdown";
 
 const Page = ({ children, title }) => {
   const t = useTranslations("panel");
@@ -27,6 +28,7 @@ const Page = ({ children, title }) => {
                 <Link href={path}>{title}</Link>
               </li>
             ))}
+            <LocaleDropdown />
           </ul>
         </div>
       </div>

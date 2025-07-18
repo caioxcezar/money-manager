@@ -3,7 +3,8 @@
     "home": "Home",
     "expenses": "Expenses",
     "categories": "Categories",
-    "backup": "Backup"
+    "backup": "Backup",
+    "select_language": "Language:"
   },
   "home": {
     "select_mode": "Select Option",
