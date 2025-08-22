@@ -4,3 +4,4 @@ This project was created to test and experiment with IndexedDB.
 ## Usage
 
 The project can be access on [vercel](https://money-manager-beige.vercel.app/pt)
+![app image](https://raw.githubusercontent.com/caioxcezar/money-manager/main/img.png)
