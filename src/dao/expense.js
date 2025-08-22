@@ -1,17 +1,13 @@
 import { DateTime } from "luxon";
-import Database from "./database";
 
-const db = Database("expenses");
-
-const ExpenseDao = {
+const ExpenseDao = (table) => ({
   getInitialDate: async () => {
-    const row = await db.open().orderBy("date").first();
+    const row = await table.orderBy("date").first();
     if (row) return DateTime.fromMillis(row.date).toFormat("yyyy");
     return DateTime.local().toFormat("yyyy");
   },
-  countBy: (column, key) => db.open().where(column).equals(key).count(),
+  countBy: (column, key) => table.where(column).equals(key).count(),
   getAll: async (order, range) => {
-    const table = db.open();
     const list = range
       ? await table
           .where(range.column)
@@ -22,13 +18,13 @@ const ExpenseDao = {
       ? list.sort((a, b) => sort[order.direction](a, b, order.column))
       : list;
   },
-  delete: async (id) => db.open().delete(id),
+  delete: async (id) => table.delete(id),
   insert: async (description, category, date, value) =>
-    db.open().add({ description, category, date, value }),
-  bulkInsert: async (itens) => db.open().bulkAdd(itens),
+    table.add({ description, category, date, value }),
+  bulkInsert: async (itens) => table.bulkAdd(itens),
   update: async (id, description, category, date, value) =>
-    db.open().update(id, { description, category, date, value }),
-};
+    table.update(id, { description, category, date, value }),
+});
 
 const sort = {
   next: (a, b, prop) => _sort(b[prop], a[prop]),

@@ -3,19 +3,19 @@ import React, { useEffect, useMemo, useState } from "react";
 import Page from "@/components/page";
 import Table from "@/components/table";
 import { toast } from "react-toastify";
-import ExpenseDao from "@/dao/expense";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import Dropdown from "@/components/dropdown";
-import CategoryDao from "@/dao/category";
 import _expense from "@/models/expense";
 import { fromMillis, fromString, now } from "@/utils/dates";
 import Group from "@/components/group";
 import Fuse from "fuse.js";
 import { useTranslations } from "next-intl";
+import useDatabase from "@/hooks/useDatabase";
 
 const Expenses = () => {
   const t = useTranslations("expenses");
+  const database = useDatabase();
 
   const [expenses, setExpenses] = useState([]);
   const [expense, setExpense] = useState(_expense);
@@ -54,7 +54,7 @@ const Expenses = () => {
   };
 
   const loadCategories = async () => {
-    const categories = await CategoryDao.getAll();
+    const categories = await database.categories.getAll();
     setExpense({
       ...expense,
       category: {
@@ -72,7 +72,7 @@ const Expenses = () => {
 
   const loadData = async () => {
     try {
-      let all = await ExpenseDao.getAll(order, {
+      let all = await database.expenses.getAll(order, {
         column: "date",
         lower: filter.startingDate,
         upper: filter.endingDate,
@@ -96,7 +96,13 @@ const Expenses = () => {
     try {
       if (!description.trim() || isNaN(date) || !`${value}`.trim())
         throw new Error("All fields must have value");
-      await ExpenseDao.update(id, description, category, date, Number(value));
+      await database.expenses.update(
+        id,
+        description,
+        category,
+        date,
+        Number(value)
+      );
       loadData();
       toast.success("Updated successfully");
     } catch (error) {
@@ -130,7 +136,7 @@ const Expenses = () => {
         });
       }
 
-      await ExpenseDao.bulkInsert(itens);
+      await database.expenses.bulkInsert(itens);
       loadData();
       toast.success(t("saved_success"));
     } catch (error) {
@@ -140,7 +146,7 @@ const Expenses = () => {
 
   const deleteExpense = async ({ id }) => {
     try {
-      await ExpenseDao.delete(id);
+      await database.expenses.delete(id);
       loadData();
       toast.success(t("deleted_success"));
     } catch (error) {

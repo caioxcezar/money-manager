@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import CanvasJSReact from "@canvasjs/react-charts";
-import CategoryDao from "@/dao/category";
 import PropTypes from "prop-types";
 import { useTranslations } from "next-intl";
+import useDatabase from "@/hooks/useDatabase";
 
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 const Pie = ({ className, expenses }) => {
+  const database = useDatabase();
+
   const t = useTranslations("home");
 
   const [pie, setPie] = useState([]);
@@ -15,7 +17,7 @@ const Pie = ({ className, expenses }) => {
 
   const onLoad = async () => {
     const pie = {};
-    const categories = await CategoryDao.getAll();
+    const categories = await database.categories.getAll();
 
     for (const { category, value } of expenses) {
       if (!pie[category]) pie[category] = 0;

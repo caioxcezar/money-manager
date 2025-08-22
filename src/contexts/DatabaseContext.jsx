@@ -1,7 +1,9 @@
 "use client";
+import React, { createContext, useRef } from "react";
 import expense from "@/models/expense";
 import category from "@/models/category";
 import Dexie from "dexie";
+import propTypes from "prop-types";
 
 const DB_NAME = "money-database.db";
 const DB_VERSION = 3;
@@ -10,21 +12,15 @@ const TABLES = [
   { name: "categories", model: category },
 ];
 
-const db = new Dexie(DB_NAME);
-/**
- * @param {string} table name
- * @returns
- */
-const Database = (table) => {
-  /**
-   * @returns {Dexie.Table}
-   */
-  const open = () => {
+export const DatabaseContext = createContext();
+
+const DatabaseProvider = ({ children }) => {
+  const db = useRef(new Dexie(DB_NAME)).current;
+
+  const open = (table) => {
     init();
     return db[table];
   };
-
-  const current = db;
 
   const init = () => {
     const open = db.isOpen();
@@ -45,12 +41,21 @@ const Database = (table) => {
 
     try {
       db.version(DB_VERSION).stores(schema);
+      db.open();
     } catch (_err) {
       // Database already open
     }
   };
 
-  return { open, current };
+  return (
+    <DatabaseContext.Provider value={{ open, db, init }}>
+      {children}
+    </DatabaseContext.Provider>
+  );
 };
 
-export default Database;
+DatabaseProvider.propTypes = {
+  children: propTypes.element,
+};
+
+export default DatabaseProvider;

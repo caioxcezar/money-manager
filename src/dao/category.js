@@ -1,19 +1,16 @@
-import Database from "./database";
-
-const db = Database("categories");
-
-const CategoryDao = {
+const CategoryDao = (table) => ({
   getAll: async (order) => {
-    let collection = db.open();
     if (order) {
-      collection = collection.orderBy(order.column);
+      let collection = table.orderBy(order.column);
       if (order.direction == "prev") collection = collection.reverse();
+      return collection.toArray();
+    } else {
+      return table.toArray();
     }
-    return collection.toArray();
   },
-  insert: async (description) => db.open().add({ description }),
-  update: async (id, description) => db.open().update(id, { description }),
-  delete: async (id) => db.open().delete(id),
-};
+  insert: async (description) => table.add({ description }),
+  update: async (id, description) => table.update(id, { description }),
+  delete: async (id) => table.delete(id),
+});
 
 export default CategoryDao;

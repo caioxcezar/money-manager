@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Page from "@/components/page";
 import Button from "@/components/button";
-import Database from "@/dao/database";
 import { toast } from "react-toastify";
 import Input from "@/components/input";
 import useRequest from "@/hooks/useRequest";
@@ -10,12 +9,15 @@ import Checkbox from "@/components/checkbox";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import useDatabase from "@/hooks/useDatabase";
+import { importInto, exportDB, peakImportFile } from "dexie-export-import";
 
 const Backup = () => {
   const t = useTranslations("backup");
   const request = useRequest();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { db, init } = useDatabase();
 
   const [blob, setBlob] = useState(null);
   const [meta, setMeta] = useState(null);
@@ -88,10 +90,9 @@ const Backup = () => {
 
   const exportbackup = async () => {
     try {
-      const { exportDB } = await import("dexie-export-import");
-      const db = await Database("").current.open();
+      db.open();
       const blob = await exportDB(db);
-      Database("").current.close();
+      db.close();
       if (gdrive) await exportGoogle(blob);
       else downloadDB(blob);
     } catch (error) {
@@ -134,6 +135,7 @@ const Backup = () => {
   };
 
   const importbackup = (blob) => setBlob(blob);
+
   const importbackupgdrive = async () => {
     try {
       const googleToken = localStorage.getItem("google-token");
@@ -161,15 +163,13 @@ const Backup = () => {
 
   const updateMeta = async () => {
     if (!blob) return;
-    const { peakImportFile } = await import("dexie-export-import");
     const importMeta = await peakImportFile(blob);
     setMeta(importMeta);
   };
 
   const confirm = async () => {
     try {
-      const { importInto } = await import("dexie-export-import");
-      const db = await Database("").current;
+      init();
       await importInto(db, blob, { overwriteValues: true });
       setBlob(null);
       setMeta(null);

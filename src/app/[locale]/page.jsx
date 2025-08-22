@@ -4,13 +4,14 @@ import Page from "@/components/page";
 import dynamic from "next/dynamic";
 import Dropdown from "@/components/dropdown";
 import Total from "@/components/total";
-import ExpenseDao from "@/dao/expense";
 import { fromString, now } from "@/utils/dates";
 import { useTranslations } from "next-intl";
+import useDatabase from "@/hooks/useDatabase";
 const Pie = dynamic(() => import("@/components/pie"), { ssr: false });
 
 const Home = () => {
   const t = useTranslations("home");
+  const database = useDatabase();
 
   const dateSpan = useRef([
     { id: 1, value: t("mode_monthly") },
@@ -46,7 +47,7 @@ const Home = () => {
 
   const load = async () => {
     let years = [];
-    const first = await ExpenseDao.getInitialDate();
+    const first = await database.expenses.getInitialDate();
     for (let i = Number(now().toFormat("yyyy")); i >= Number(first); i--) {
       years.push({ id: i, value: i });
     }
@@ -74,7 +75,7 @@ const Home = () => {
       range.upper = lower.endOf("month").toMillis();
     }
 
-    const expenses = await ExpenseDao.getAll(null, range);
+    const expenses = await database.expenses.getAll(null, range);
     setExpenses(expenses);
   };
 

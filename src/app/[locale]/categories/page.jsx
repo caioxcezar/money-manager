@@ -4,8 +4,7 @@ import Group from "@/components/group";
 import Input from "@/components/input";
 import Page from "@/components/page";
 import Table from "@/components/table";
-import CategoryDao from "@/dao/category";
-import ExpenseDao from "@/dao/expense";
+import useDatabase from "@/hooks/useDatabase";
 import category from "@/models/category";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
@@ -13,6 +12,7 @@ import { toast } from "react-toastify";
 
 const Categories = () => {
   const t = useTranslations("categories");
+  const database = useDatabase();
 
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
@@ -24,7 +24,7 @@ const Categories = () => {
 
   const onLoad = async (order) => {
     try {
-      const all = await CategoryDao.getAll(order);
+      const all = await database.categories.getAll(order);
       setCategories(all);
     } catch (error) {
       toast.error(error);
@@ -34,7 +34,7 @@ const Categories = () => {
   const updateCategory = async ({ id, description }) => {
     try {
       if (!description.trim()) throw new Error(t("msg_empty_category"));
-      await CategoryDao.update(id, description);
+      await database.categories.update(id, description);
       onLoad();
       toast.success(t("msg_updated_success"));
     } catch (error) {
@@ -46,9 +46,9 @@ const Categories = () => {
 
   const deleteCategory = async ({ id }) => {
     try {
-      const expense = await ExpenseDao.countBy("category", id);
+      const expense = await database.expenses.countBy("category", id);
       if (expense) throw new Error(t("msg_not_empty_category"));
-      await CategoryDao.delete(id);
+      await database.categories.delete(id);
       onLoad();
       toast.success(t("msg_deleted_success"));
     } catch (error) {
@@ -61,7 +61,7 @@ const Categories = () => {
   const insertCategory = async () => {
     try {
       if (categoryError) throw new Error(t("msg_empty_category"));
-      await CategoryDao.insert(categoryName);
+      await database.categories.insert(categoryName);
       onLoad();
       toast.success(t("msg_insert_success"));
     } catch (error) {

@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
+import DatabaseProvider from "@/contexts/DatabaseContext";
 
 export const metadata = {
   title: "Money Manager",
@@ -22,7 +23,9 @@ export default async function RootLayout({ children, params }) {
   return (
     <html lang={locale}>
       <body className={convergence.className}>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <DatabaseProvider>
+          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        </DatabaseProvider>
       </body>
     </html>
   );
