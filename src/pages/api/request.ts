@@ -1,4 +1,6 @@
-export default async function handler(req, res) {
+import { type NextApiRequest, type NextApiResponse } from "next";
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const body = req.body;
     const str = atob(body);
