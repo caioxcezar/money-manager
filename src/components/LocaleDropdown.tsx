@@ -13,11 +13,12 @@ export default function LocaleDropdown() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const pathname = usePathname();
-  const params = useParams();
 
-  const onSelectChange = ({ target: { value } }) =>
+  const onSelectChange = ({
+    target: { value },
+  }: React.ChangeEvent<HTMLSelectElement>) =>
     startTransition(() => {
-      router.replace({ pathname, params }, { locale: value });
+      router.replace({ pathname }, { locale: value });
     });
 
   return (

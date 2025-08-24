@@ -3,14 +3,19 @@ import React, { useEffect, useMemo, useState } from "react";
 import Page from "@/components/page";
 import Button from "@/components/button";
 import { toast } from "react-toastify";
-import Input from "@/components/input";
+import Input, { InputType } from "@/components/input";
 import useRequest from "@/hooks/useRequest";
 import Checkbox from "@/components/checkbox";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import useDatabase from "@/hooks/useDatabase";
-import { importInto, exportDB, peakImportFile } from "dexie-export-import";
+import {
+  importInto,
+  exportDB,
+  peakImportFile,
+  type DexieExportJsonMeta,
+} from "dexie-export-import";
 
 const Backup = () => {
   const t = useTranslations("backup");
@@ -19,8 +24,8 @@ const Backup = () => {
   const router = useRouter();
   const { db, init } = useDatabase();
 
-  const [blob, setBlob] = useState(null);
-  const [meta, setMeta] = useState(null);
+  const [blob, setBlob] = useState<Blob | null>(null);
+  const [meta, setMeta] = useState<DexieExportJsonMeta | null>(null);
   const [hasServer, setHasServer] = useState(false);
   const [config, setConfig] = useState({
     gdrive: false,
@@ -62,7 +67,7 @@ const Backup = () => {
   const loadToken = async () => {
     const token = localStorage.getItem("google-token");
     if (token) return;
-    const code = searchParams.get("code");
+    const code = searchParams!.get("code");
     if (!code) return;
     const config = localStorage.getItem("configuration");
     if (!config) return;
@@ -80,7 +85,7 @@ const Backup = () => {
     );
     if (response.error) return toast.error(response.error_description);
     localStorage.setItem("google-token", JSON.stringify(response));
-    router.replace("/backup", undefined, { shallow: true });
+    router.replace("/backup");
   };
 
   const loadOptions = async () => {
@@ -90,17 +95,17 @@ const Backup = () => {
 
   const exportbackup = async () => {
     try {
-      db.open();
-      const blob = await exportDB(db);
-      db.close();
+      db!.open();
+      const blob = await exportDB(db!);
+      db!.close();
       if (gdrive) await exportGoogle(blob);
       else downloadDB(blob);
     } catch (error) {
-      toast.error(error.message);
+      toast.error((error as Error).message);
     }
   };
 
-  const exportGoogle = async (blob) => {
+  const exportGoogle = async (blob: Blob) => {
     try {
       const googleToken = localStorage.getItem("google-token");
       const configuration = localStorage.getItem("configuration");
@@ -122,11 +127,11 @@ const Backup = () => {
       if (response.error) throw response;
       toast.success(`Synched with id: ${response.id}`);
     } catch (error) {
-      toast.error(error.message);
+      toast.error((error as Error).message);
     }
   };
 
-  const downloadDB = (blob) => {
+  const downloadDB = (blob: Blob) => {
     const element = document.createElement("a");
     element.href = URL.createObjectURL(blob);
     element.download = "database.json";
@@ -134,7 +139,7 @@ const Backup = () => {
     element.click();
   };
 
-  const importbackup = (blob) => setBlob(blob);
+  const importbackup = (blob: Blob) => setBlob(blob);
 
   const importbackupgdrive = async () => {
     try {
@@ -157,7 +162,7 @@ const Backup = () => {
       if (response.error) throw response;
       setBlob(new Blob([response.data], { type: "application/json" }));
     } catch (error) {
-      toast.error(error.message);
+      toast.error((error as Error).message);
     }
   };
 
@@ -170,12 +175,12 @@ const Backup = () => {
   const confirm = async () => {
     try {
       init();
-      await importInto(db, blob, { overwriteValues: true });
+      await importInto(db!, blob!, { overwriteValues: true });
       setBlob(null);
       setMeta(null);
       toast.success("Imported~!");
     } catch (error) {
-      toast.error(error.message);
+      toast.error((error as Error).message);
     }
   };
 
@@ -183,7 +188,10 @@ const Backup = () => {
     updateMeta();
   }, [blob]);
 
-  const updateConfig = (key, value) => {
+  const updateConfig = (
+    key: string,
+    value: string | number | boolean | File | null
+  ) => {
     const _config = { ...config, [key]: value };
     setConfig(_config);
     localStorage.setItem("configuration", JSON.stringify(_config));
@@ -229,7 +237,12 @@ const Backup = () => {
           </>
         )}
         <Button title={t("button_export")} onClick={exportbackup} />
-        <Input label={t("button_import")} type="file" onChange={importbackup} />
+        <Input
+          value=""
+          label={t("button_import")}
+          type={InputType.FILE}
+          onChange={(e) => importbackup(e as Blob)}
+        />
         {gdrive && (
           <Button
             title={t("button_gdrive_import")}

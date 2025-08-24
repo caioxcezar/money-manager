@@ -1,12 +1,12 @@
 const useRequest = () => {
-  const get = async (url) => {
+  const get = async (url: string) => {
     const res = await fetch(url, {
       method: "GET",
     });
     return res.json();
   };
 
-  const post = async (url, payload, headers, raw = false) => {
+  const post = async (url: string, payload?: string | Blob | null, headers?: HeadersInit, raw?: boolean) => {
     const res = await fetch(url, {
       headers,
       method: "POST",
@@ -16,7 +16,7 @@ const useRequest = () => {
     return res.json();
   };
 
-  const corsRequest = (method, url, body, headers, raw = false) => {
+  const corsRequest = (method: "POST" | "GET", url: string, body: string | object, headers?: HeadersInit, raw?: boolean) => {
     const payload = btoa(
       JSON.stringify({
         url,

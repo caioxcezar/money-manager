@@ -1,22 +1,32 @@
 import React, { useEffect, useState } from "react";
 import CanvasJSReact from "@canvasjs/react-charts";
-import PropTypes from "prop-types";
 import { useTranslations } from "next-intl";
 import useDatabase from "@/hooks/useDatabase";
+import { type Expense } from "@/contexts/DatabaseContext";
+
+type Props = {
+  className?: string;
+  expenses: Expense[];
+};
+
+type ChartData = {
+  y: number;
+  label: string;
+};
 
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
-const Pie = ({ className, expenses }) => {
+const Pie = ({ className, expenses }: Props) => {
   const database = useDatabase();
 
   const t = useTranslations("home");
 
-  const [pie, setPie] = useState([]);
+  const [pie, setPie] = useState<ChartData[]>([]);
   useEffect(() => {
     onLoad();
   }, [expenses]);
 
   const onLoad = async () => {
-    const pie = {};
+    const pie: { [key: number]: number } = {};
     const categories = await database.categories.getAll();
 
     for (const { category, value } of expenses) {
@@ -27,7 +37,7 @@ const Pie = ({ className, expenses }) => {
     setPie(
       Object.entries(pie).map(([key, value]) => ({
         y: value,
-        label: categories.find(({ id }) => id == key).description,
+        label: categories.find(({ id }) => id.toString() == key)!.description,
       }))
     );
   };
@@ -52,11 +62,6 @@ const Pie = ({ className, expenses }) => {
       <CanvasJSChart options={options} />
     </div>
   );
-};
-
-Pie.propTypes = {
-  className: PropTypes.string,
-  expenses: PropTypes.array,
 };
 
 export default Pie;

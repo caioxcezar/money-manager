@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
-import PropTypes from "prop-types";
 import { useTranslations } from "next-intl";
+
+type Props = { className?: string; expenses: { value: number }[] };
 
 const CURRENCE = "R$";
 
-const Total = ({ className, expenses }) => {
+const Total = ({ className = "", expenses }: Props) => {
   const t = useTranslations("home");
 
   const value = useMemo(
@@ -14,16 +15,11 @@ const Total = ({ className, expenses }) => {
 
   return (
     <div className={className}>
-      <spam className="text-4xl">
+      <div className="text-4xl">
         {`${t("total")}: ${CURRENCE} ${value.toFixed(2)}`}
-      </spam>
+      </div>
     </div>
   );
-};
-
-Total.propTypes = {
-  className: PropTypes.string,
-  expenses: PropTypes.array,
 };
 
 export default Total;

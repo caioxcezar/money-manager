@@ -1,19 +1,24 @@
-import React, { useRef } from "react";
-import PropTypes from "prop-types";
+import React from "react";
 import { ToastContainer } from "react-toastify";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import LocaleDropdown from "./LocaleDropdown";
+import { AppRoutes } from "@/i18n/routing";
 
-const Page = ({ children, title }) => {
+type Props = {
+  children: React.ReactNode;
+  title?: string;
+};
+
+const Page = ({ children, title }: Props) => {
   const t = useTranslations("panel");
 
-  const pages = useRef([
-    { path: "/", title: t("home") },
-    { path: "/expenses", title: t("expenses") },
-    { path: "/categories", title: t("categories") },
-    { path: "/backup", title: t("backup") },
-  ]).current;
+  const pages = [
+    { path: AppRoutes.HOME, title: t("home") },
+    { path: AppRoutes.EXPENSES, title: t("expenses") },
+    { path: AppRoutes.CATEGORIES, title: t("categories") },
+    { path: AppRoutes.BACKUP, title: t("backup") },
+  ];
 
   return (
     <main className={"flex bg-canvas-lgray dark:bg-black"}>
@@ -40,8 +45,5 @@ const Page = ({ children, title }) => {
     </main>
   );
 };
-Page.propTypes = {
-  children: PropTypes.element,
-  title: PropTypes.string,
-};
+
 export default Page;

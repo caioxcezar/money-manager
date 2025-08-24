@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     const clientSecret = req.headers["client_secret"];
     const redirectUri = req.headers["redirect_uri"];
     const refreshToken = req.headers["refresh_token"];
-    const name = "money-manager-db.json";
+    const name = "money-manager-db!.json";
 
     const oAuth2Client = new google.auth.OAuth2(
       clientId,
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     });
     res.status(200).send(response.data);
   } catch (error) {
-    res.status(400).send({ message: error.message, error: true });
+    res.status(400).send({ message: (error as Error).message, error: true });
   }
 }
 
@@ -52,7 +52,7 @@ const searchFile = async (fileName, drive) => {
     });
     return response.data.files;
   } catch (error) {
-    console.error("Error searching for the file:", error.message);
+    console.error("Error searching for the file:", (error as Error).message);
     throw error;
   }
 };

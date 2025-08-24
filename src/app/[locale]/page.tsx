@@ -1,24 +1,25 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import Page from "@/components/page";
-import dynamic from "next/dynamic";
-import Dropdown from "@/components/dropdown";
+import Dropdown, { type DropdownOption } from "@/components/dropdown";
 import Total from "@/components/total";
 import { fromString, now } from "@/utils/dates";
 import { useTranslations } from "next-intl";
 import useDatabase from "@/hooks/useDatabase";
-const Pie = dynamic(() => import("@/components/pie"), { ssr: false });
+import { type Range } from "@/dao/expense";
+import { type Expense } from "@/contexts/DatabaseContext";
+// import Pie from "@/components/pie";
 
 const Home = () => {
   const t = useTranslations("home");
   const database = useDatabase();
 
-  const dateSpan = useRef([
-    { id: 1, value: t("mode_monthly") },
-    { id: 2, value: t("mode_yearly") },
+  const dateSpan: DropdownOption[] = useRef([
+    { id: "1", value: t("mode_monthly") },
+    { id: "2", value: t("mode_yearly") },
   ]).current;
 
-  const months = useRef([
+  const months: DropdownOption[] = useRef([
     { id: "01", value: t("january") },
     { id: "02", value: t("february") },
     { id: "03", value: t("march") },
@@ -33,9 +34,9 @@ const Home = () => {
     { id: "12", value: t("december") },
   ]).current;
 
-  const [years, setYears] = useState([]);
-  const [option, setOption] = useState(1);
-  const [expenses, setExpenses] = useState([]);
+  const [years, setYears] = useState<DropdownOption[]>([]);
+  const [option, setOption] = useState("1");
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [date, setDate] = useState({
     month: months.find(({ id }) => now().toFormat("MM") == id)?.id || 1,
     year: Number(now().toFormat("yyyy")),
@@ -46,10 +47,10 @@ const Home = () => {
   }, []);
 
   const load = async () => {
-    let years = [];
+    const years = [];
     const first = await database.expenses.getInitialDate();
     for (let i = Number(now().toFormat("yyyy")); i >= Number(first); i--) {
-      years.push({ id: i, value: i });
+      years.push({ id: i.toString(), value: i.toString() });
     }
     setYears(years);
   };
@@ -59,13 +60,15 @@ const Home = () => {
   }, [option, date]);
 
   const updateExpenses = async () => {
-    const range = {
+    const range: Range = {
       column: "date",
       lowerOpen: false,
       upperOpen: false,
+      lower: 0,
+      upper: 0,
     };
 
-    if (option == 2) {
+    if (option == "2") {
       const lower = fromString(`${date.year}-01-01T00:00:00.000`);
       range.lower = lower.toMillis();
       range.upper = lower.endOf("year").toMillis();
@@ -88,7 +91,7 @@ const Home = () => {
           value={option}
           onChange={setOption}
         />
-        {option == 1 && (
+        {option == "1" && (
           <Dropdown
             text={t("select_mouth")}
             options={months}
@@ -100,11 +103,13 @@ const Home = () => {
           text={t("select_year")}
           options={years}
           value={date.year}
-          onChange={(year) => setDate({ year, month: date.month })}
+          onChange={(year) =>
+            setDate({ year: Number(year), month: date.month })
+          }
         />
       </div>
       <Total expenses={expenses} />
-      <Pie expenses={expenses} />
+      {/* <Pie expenses={expenses} /> */}
     </Page>
   );
 };

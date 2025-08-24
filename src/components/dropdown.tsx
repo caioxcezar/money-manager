@@ -1,15 +1,29 @@
 import React from "react";
-import PropTypes from "prop-types";
+
+type Props = {
+  options: DropdownOption[];
+  onChange: (value: string, event: HTMLSelectElement) => void;
+  text: string;
+  value: string | number | readonly string[] | undefined;
+  className?: string;
+  disabled?: boolean;
+  error?: boolean;
+};
+
+export type DropdownOption = {
+  id: string;
+  value: string;
+};
 
 const Dropdown = ({
   text = "Select a value",
   options = [],
   onChange = () => null,
   value,
-  error,
-  className,
-  disabled,
-}) => {
+  error = false,
+  className = "",
+  disabled = false,
+}: Props) => {
   const labelStyle = error
     ? "block mb-2 text-sm font-medium text-red-700 dark:text-red-400"
     : "block mb-2 text-sm font-medium";
@@ -25,7 +39,7 @@ const Dropdown = ({
         className={inputStyle}
         value={value}
         disabled={disabled}
-        onChange={({ target: { value } }) => onChange(value)}
+        onChange={({ target }) => onChange(target.value, target)}
       >
         {options.map((option) => (
           <option key={option.id} value={option.id}>
@@ -35,15 +49,6 @@ const Dropdown = ({
       </select>
     </div>
   );
-};
-Dropdown.propTypes = {
-  className: PropTypes.string,
-  options: PropTypes.array,
-  onChange: PropTypes.func,
-  text: PropTypes.string,
-  value: PropTypes.object,
-  error: PropTypes.bool,
-  disabled: PropTypes.bool,
 };
 
 export default Dropdown;

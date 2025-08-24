@@ -1,8 +1,14 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState, type ReactNode } from "react";
 import Button from "./button";
 import { useTranslations } from "next-intl";
-const Group = ({ title, children, initialOpen = false }) => {
+
+type Props = {
+  children: ReactNode;
+  title: string;
+  initialOpen?: boolean;
+};
+
+const Group = ({ title, children, initialOpen = false }: Props) => {
   const t = useTranslations("group");
   const [isOpen, setOpen] = useState(initialOpen);
   return (
@@ -26,9 +32,5 @@ const Group = ({ title, children, initialOpen = false }) => {
     </div>
   );
 };
-Group.propTypes = {
-  children: PropTypes.element,
-  title: PropTypes.string,
-  initialOpen: PropTypes.bool,
-};
+
 export default Group;

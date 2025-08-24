@@ -1,7 +1,31 @@
 import React from "react";
-import PropTypes from "prop-types";
-import Input from "./input";
-import Dropdown from "./dropdown";
+import Input, { type InputType } from "./input";
+import Dropdown, { type DropdownOption } from "./dropdown";
+
+type Props = {
+  type: InputType | CellTypes;
+  value: string;
+  dropdownValue: DropdownOption[];
+  placeholder: string;
+  disabled?: boolean;
+  onChange: (
+    value: string | number | File | null,
+    event: HTMLInputElement
+  ) => void;
+  onSubmit: (
+    value: string | number | File | null,
+    event: HTMLInputElement | HTMLSelectElement
+  ) => void;
+  onCancel: (
+    value: string | number | File | null,
+    event: HTMLInputElement
+  ) => void;
+};
+
+export enum CellTypes {
+  DROPDOWN = "dropdown",
+  TEXT = "text",
+}
 
 const Cell = ({
   type,
@@ -12,17 +36,17 @@ const Cell = ({
   onChange,
   onSubmit,
   onCancel,
-}) => {
+}: Props) => {
   let inner = <></>;
 
   switch (type) {
-    case "Dropdown": {
+    case "dropdown": {
       inner = (
         <Dropdown
-          text={null}
+          text=""
           value={value}
           options={dropdownValue}
-          onChange={(value) => onSubmit(value)}
+          onChange={onSubmit}
         />
       );
       break;
@@ -32,15 +56,9 @@ const Cell = ({
       break;
     }
     default: {
-      const _type = {
-        Money: "money",
-        Date: "datetime-local",
-        _: type,
-      };
-
       inner = (
         <Input
-          type={_type[type]}
+          type={type as InputType}
           disabled={disabled}
           className="bg-transparent w-full"
           placeholder={placeholder}
@@ -54,17 +72,6 @@ const Cell = ({
   }
 
   return <td className="px-3 whitespace-nowrap">{inner}</td>;
-};
-
-Cell.propTypes = {
-  type: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  dropdownValue: PropTypes.array,
-  placeholder: PropTypes.string,
-  disabled: PropTypes.bool,
-  onChange: PropTypes.func,
-  onSubmit: PropTypes.func,
-  onCancel: PropTypes.func,
 };
 
 export default Cell;

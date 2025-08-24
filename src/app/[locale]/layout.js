@@ -1,12 +1,12 @@
 import React from "react";
 import { Convergence } from "next/font/google";
-import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
-import PropTypes from "prop-types";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import DatabaseProvider from "@/contexts/DatabaseContext";
+import "./globals.css";
+// type Prop { children: React.ReactNode, params?: { [key: string]: string | string[] } }
 
 export const metadata = {
   title: "Money Manager",
@@ -16,9 +16,7 @@ export const metadata = {
 const convergence = Convergence({ weight: "400", subsets: ["latin"] });
 export default async function RootLayout({ children, params }) {
   const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
+  if (!hasLocale(routing.locales, locale)) notFound();
 
   return (
     <html lang={locale}>
@@ -30,7 +28,3 @@ export default async function RootLayout({ children, params }) {
     </html>
   );
 }
-RootLayout.propTypes = {
-  children: PropTypes.element,
-  params: PropTypes.object,
-};

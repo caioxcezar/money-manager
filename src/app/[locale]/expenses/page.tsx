@@ -1,24 +1,26 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Page from "@/components/page";
 import Table from "@/components/table";
 import { toast } from "react-toastify";
-import Input from "@/components/input";
+import Input, { InputType } from "@/components/input";
 import Button from "@/components/button";
-import Dropdown from "@/components/dropdown";
-import _expense from "@/models/expense";
+import Dropdown, { type DropdownOption } from "@/components/dropdown";
 import { fromMillis, fromString, now } from "@/utils/dates";
 import Group from "@/components/group";
 import Fuse from "fuse.js";
 import { useTranslations } from "next-intl";
 import useDatabase from "@/hooks/useDatabase";
+import { type Expense } from "@/contexts/DatabaseContext";
+import { HeaderDirection, type HeaderChange } from "@/components/header";
+import { CellTypes } from "@/components/cell";
 
 const Expenses = () => {
   const t = useTranslations("expenses");
   const database = useDatabase();
 
-  const [expenses, setExpenses] = useState([]);
-  const [expense, setExpense] = useState(_expense);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [categories, setCategories] = useState<DropdownOption[]>([]);
 
   const [description, setDescription] = useState({ value: "", error: true });
   const [category, setCategory] = useState({ value: "1", error: true });
@@ -26,48 +28,36 @@ const Expenses = () => {
   const [amountSpent, setAmount] = useState({ value: "", error: true });
   const [repeat, setRepeat] = useState(0);
 
-  const [order, setOrder] = useState({ column: "date", direction: "prev" });
+  const [order, setOrder] = useState<HeaderChange>({
+    column: "date",
+    direction: HeaderDirection.PREV,
+  });
 
-  const [filter, _setFilter] = useState({
-    startingDate: now().toMillis(),
-    endingDate: now().toMillis(),
+  const [filter, setFilter] = useState({
+    startingDate: now().startOf("month").toMillis(),
+    endingDate: now().endOf("month").toMillis(),
     description: "",
     category: "-1",
   });
-  const setFilter = (values) => _setFilter({ ...filter, ...values });
 
   useEffect(() => {
     loadCategories();
-    setFilterValues();
   }, []);
 
   useEffect(() => {
     loadData();
   }, [filter, order]);
 
-  const setFilterValues = () => {
-    const today = now();
-    setFilter({
-      startingDate: today.startOf("month").toMillis(),
-      endingDate: today.endOf("month").toMillis(),
-    });
-  };
-
   const loadCategories = async () => {
     const categories = await database.categories.getAll();
-    setExpense({
-      ...expense,
-      category: {
-        type: "Dropdown",
-        indexed: true,
-        values: categories.map((ct) => ({
-          id: ct.id,
-          value: ct.description,
-        })),
-      },
-    });
+    setCategories(
+      categories.map((ct) => ({
+        id: ct.id.toString(),
+        value: ct.description,
+      }))
+    );
     if (categories.length)
-      setCategory({ error: false, value: categories[0].id });
+      setCategory({ error: false, value: categories[0].id.toString() });
   };
 
   const loadData = async () => {
@@ -84,15 +74,24 @@ const Expenses = () => {
         all = fuse.search(filter.description).map(({ item }) => item);
       }
       if (filter.category != "-1") {
-        all = all.filter(({ category }) => category == filter.category);
+        all = all.filter(
+          ({ category }) => category.toString() == filter.category
+        );
       }
       setExpenses(all);
     } catch (error) {
-      toast.error(error);
+      const obj = error as Error;
+      toast.error(obj.message);
     }
   };
 
-  const updateExpense = async ({ id, description, category, date, value }) => {
+  const updateExpense = async ({
+    id,
+    description,
+    category,
+    date,
+    value,
+  }: Expense) => {
     try {
       if (!description.trim() || isNaN(date) || !`${value}`.trim())
         throw new Error("All fields must have value");
@@ -106,7 +105,8 @@ const Expenses = () => {
       loadData();
       toast.success("Updated successfully");
     } catch (error) {
-      toast.error(`Error while updateding.\n${error.message}`);
+      const obj = error as Error;
+      toast.error(`Error while updateding.\n${obj.message}`);
     } finally {
       loadData();
     }
@@ -124,13 +124,12 @@ const Expenses = () => {
 
       const itens = [];
       for (let i = 0; i <= repeat; i++) {
-        let rDate = fromMillis(date.value);
-        rDate = fromString(rDate);
+        let rDate = fromString(fromMillis(Number(date.value)));
         rDate = rDate.set({ month: rDate.month + i });
 
         itens.push({
           description: description.value,
-          category: category.value,
+          category: Number(category.value),
           date: rDate.toMillis(),
           value: Number(amountSpent.value),
         });
@@ -140,29 +139,25 @@ const Expenses = () => {
       loadData();
       toast.success(t("saved_success"));
     } catch (error) {
-      toast.error(`${t("saved_failed")}.\n${error.message}`);
+      const obj = error as Error;
+      toast.error(`${t("saved_failed")}.\n${obj.message}`);
     }
   };
 
-  const deleteExpense = async ({ id }) => {
+  const deleteExpense = async ({ id }: Expense) => {
     try {
       await database.expenses.delete(id);
       loadData();
       toast.success(t("deleted_success"));
     } catch (error) {
-      toast.error(`${t("deleted_failed")}.\n${error.message}`);
+      const obj = error as Error;
+      toast.error(`${t("deleted_failed")}.\n${obj.message}`);
     } finally {
       loadData();
     }
   };
 
-  const { categories, filterCategories } = useMemo(() => {
-    const categories = expense.category.values || [];
-    return {
-      categories,
-      filterCategories: [{ id: "-1", value: "..." }, ...categories],
-    };
-  }, [expense]);
+  const filterCategories = [{ id: "-1", value: "..." }, ...categories];
 
   return (
     <Page title={t("title")}>
@@ -170,25 +165,35 @@ const Expenses = () => {
         <Input
           label={t("input_description")}
           value={description.value}
-          onChange={(value) => setDescription({ error: !value.trim(), value })}
+          onChange={(value) => {
+            if (value == null || value instanceof File) return;
+            const v = value.toString().trim();
+            setDescription({ error: !v, value: v });
+          }}
           error={description.error}
         />
         <div className="flex gap-2">
           <div className="flex-1">
             <Input
               label={t("input_date")}
-              type={"datetime-local"}
-              onChange={(value) => setDate({ error: !value, value })}
+              type={InputType.DATETIME_LOCAL}
+              onChange={(value) => {
+                if (value == null || value instanceof File) return;
+                setDate({ error: !value, value: value.toString() });
+              }}
               value={date.value}
               error={date.error}
             />
           </div>
           <div className="flex-1">
             <Input
-              type={"number"}
+              type={InputType.NUMBER}
               label={t("input_repeat")}
-              onChange={setRepeat}
-              value={repeat}
+              onChange={(value) => {
+                if (value == null || value instanceof File) return;
+                setRepeat(Number(value));
+              }}
+              value={repeat.toString()}
             />
           </div>
         </div>
@@ -204,9 +209,13 @@ const Expenses = () => {
           </div>
           <div className="flex-1">
             <Input
-              type={"money"}
+              type={InputType.MONEY}
               label={t("input_money")}
-              onChange={(value) => setAmount({ error: !value.trim(), value })}
+              onChange={(value) => {
+                if (value == null || value instanceof File) return;
+                const v = value.toString();
+                setAmount({ error: !v.trim(), value: v });
+              }}
               value={amountSpent.value}
               error={amountSpent.error}
             />
@@ -220,17 +229,29 @@ const Expenses = () => {
           <div className="flex-1">
             <Input
               label={t("input_start_date")}
-              type={"datetime-local"}
-              onChange={(startingDate) => setFilter({ startingDate })}
-              value={filter.startingDate}
+              type={InputType.DATETIME_LOCAL}
+              onChange={(value) => {
+                if (value == null || value instanceof File) return;
+                setFilter((prev) => ({
+                  ...prev,
+                  startingDate: Number(value),
+                }));
+              }}
+              value={filter.startingDate.toString()}
             />
           </div>
           <div className="flex-1">
             <Input
-              type={"datetime-local"}
+              type={InputType.DATETIME_LOCAL}
               label={t("input_end_date")}
-              onChange={(endingDate) => setFilter({ endingDate })}
-              value={filter.endingDate}
+              onChange={(value) => {
+                if (value == null || value instanceof File) return;
+                setFilter((prev) => ({
+                  ...prev,
+                  endingDate: Number(value),
+                }));
+              }}
+              value={filter.endingDate.toString()}
             />
           </div>
         </div>
@@ -240,21 +261,40 @@ const Expenses = () => {
               text={t("select_category")}
               value={filter.category}
               options={filterCategories}
-              onChange={(category) => setFilter({ category })}
+              onChange={(category) =>
+                setFilter((prev) => ({ ...prev, category }))
+              }
             />
           </div>
           <div className="flex-1">
             <Input
               label={t("input_description")}
               value={filter.description}
-              onChange={(description) => setFilter({ description })}
+              onChange={(value) => {
+                if (value == null || value instanceof File) return;
+                setFilter((prev) => ({
+                  ...prev,
+                  description: value.toString(),
+                }));
+              }}
             />
           </div>
         </div>
       </Group>
-      <Table
+      <Table<Expense>
         list={expenses}
-        model={expense}
+        model={[
+          { key: "id", type: InputType.NUMBER, readonly: true },
+          { key: "description", type: InputType.DEFAULT, readonly: false },
+          {
+            key: "category",
+            type: CellTypes.DROPDOWN,
+            readonly: false,
+            values: categories,
+          },
+          { key: "date", type: InputType.DATETIME_LOCAL, readonly: false },
+          { key: "value", type: InputType.MONEY, readonly: false },
+        ]}
         onChange={updateExpense}
         onChangeOrder={setOrder}
         onDelete={deleteExpense}
