@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import CanvasJSReact from "@canvasjs/react-charts";
 import { useTranslations } from "next-intl";
 import useDatabase from "@/hooks/useDatabase";
 import { type Expense } from "@/contexts/DatabaseContext";
+// @ts-ignore
+import CanvasJSReact from "@canvasjs/react-charts";
 
 type Props = {
   className?: string;
