@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import useDatabase from "@/hooks/useDatabase";
 import { type Range } from "@/dao/expense";
 import { type Expense } from "@/contexts/DatabaseContext";
+import Pie from "@/components/pie";
 // import Pie from "@/components/pie";
 
 const Home = () => {
@@ -109,7 +110,7 @@ const Home = () => {
         />
       </div>
       <Total expenses={expenses} />
-      {/* <Pie expenses={expenses} /> */}
+      <Pie expenses={expenses} />
     </Page>
   );
 };

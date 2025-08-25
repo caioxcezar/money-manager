@@ -54,7 +54,6 @@ function Table<T extends Row>({
       className="odd:bg-tb-row-odd even:bg-tb-row-even border-b dark:border-gray-700"
     >
       {model.map(({ key, type, readonly, values }) => {
-        console.log(">>>RENDERING");
         return (
           <Cell
             key={key}
