@@ -60,9 +60,9 @@ const Input = ({
       case InputType.CPF:
         return value.replace(/\D/g, "");
       case InputType.MONEY:
-        return value.replace(/[^0-9.]/g, "");
+        return value.replace(/[^0-9.,]/g, "").replace(/,/, ".");
       case InputType.NUMBER:
-        return Number(value.replace(/[^0-9.]/g, "").replace(/,/, "."));
+        return Number(value.replace(/[^0-9.,]/g, "").replace(/,/, "."));
       case InputType.DATETIME_LOCAL:
         return toMillis(value);
       default:

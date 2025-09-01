@@ -70,7 +70,7 @@ const Expenses = () => {
         upperOpen: false,
       });
       if (filter.description.trim()) {
-        const fuse = new Fuse(all, { keys: ["description"] });
+        const fuse = new Fuse(all, { keys: ["description"], threshold: 0.2 });
         all = fuse.search(filter.description).map(({ item }) => item);
       }
       if (filter.category != "-1") {
@@ -128,7 +128,7 @@ const Expenses = () => {
         rDate = rDate.set({ month: rDate.month + i });
 
         itens.push({
-          description: description.value,
+          description: description.value.trim(),
           category: Number(category.value),
           date: rDate.toMillis(),
           value: Number(amountSpent.value),
@@ -138,10 +138,19 @@ const Expenses = () => {
       await database.expenses.bulkInsert(itens);
       loadData();
       toast.success(t("saved_success"));
+      clean();
     } catch (error) {
       const obj = error as Error;
       toast.error(`${t("saved_failed")}.\n${obj.message}`);
     }
+  };
+
+  const clean = () => {
+    setDescription({ value: "", error: true });
+    setCategory({ value: "1", error: true });
+    setDate({ value: "", error: true });
+    setAmount({ value: "", error: true });
+    setRepeat(0);
   };
 
   const deleteExpense = async ({ id }: Expense) => {
@@ -167,8 +176,8 @@ const Expenses = () => {
           value={description.value}
           onChange={(value) => {
             if (value == null || value instanceof File) return;
-            const v = value.toString().trim();
-            setDescription({ error: !v, value: v });
+            const v = value.toString();
+            setDescription({ error: !v.trim(), value: v });
           }}
           error={description.error}
         />
@@ -232,6 +241,7 @@ const Expenses = () => {
               type={InputType.DATETIME_LOCAL}
               onChange={(value) => {
                 if (value == null || value instanceof File) return;
+                if (Number.isNaN(value)) return toast.warn("Invalid date");
                 setFilter((prev) => ({
                   ...prev,
                   startingDate: Number(value),
@@ -246,6 +256,7 @@ const Expenses = () => {
               label={t("input_end_date")}
               onChange={(value) => {
                 if (value == null || value instanceof File) return;
+                if (Number.isNaN(value)) return toast.warn("Invalid date");
                 setFilter((prev) => ({
                   ...prev,
                   endingDate: Number(value),
