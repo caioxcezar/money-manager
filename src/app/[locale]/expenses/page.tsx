@@ -99,7 +99,7 @@ const Expenses = () => {
         id,
         description,
         category,
-        date,
+        Number(date),
         Number(value)
       );
       loadData();
@@ -147,7 +147,7 @@ const Expenses = () => {
 
   const clean = () => {
     setDescription({ value: "", error: true });
-    setCategory({ value: "1", error: true });
+    setCategory({ value: "1", error: false });
     setDate({ value: "", error: true });
     setAmount({ value: "", error: true });
     setRepeat(0);
