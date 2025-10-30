@@ -6,8 +6,11 @@ import Total from "@/components/total";
 import { fromString, now } from "@/utils/dates";
 import { useTranslations } from "next-intl";
 import useDatabase from "@/hooks/useDatabase";
-import { type Range } from "@/dao/expense";
-import { type Expense } from "@/contexts/DatabaseContext";
+import {
+  type Income,
+  type Expense,
+  type Range,
+} from "@/contexts/DatabaseContext";
 import Pie from "@/components/pie";
 // import Pie from "@/components/pie";
 
@@ -38,6 +41,7 @@ const Home = () => {
   const [years, setYears] = useState<DropdownOption[]>([]);
   const [option, setOption] = useState("1");
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [income, setIncome] = useState<Income[]>([]);
   const [date, setDate] = useState({
     month: months.find(({ id }) => now().toFormat("MM") == id)?.id || 1,
     year: Number(now().toFormat("yyyy")),
@@ -80,7 +84,10 @@ const Home = () => {
     }
 
     const expenses = await database.expenses.getAll(null, range);
+    const income = await database.income.getAll(null, range);
+
     setExpenses(expenses);
+    setIncome(income);
   };
 
   return (
@@ -109,7 +116,7 @@ const Home = () => {
           }
         />
       </div>
-      <Total expenses={expenses} />
+      <Total expenses={expenses} income={income} />
       <Pie expenses={expenses} />
     </Page>
   );

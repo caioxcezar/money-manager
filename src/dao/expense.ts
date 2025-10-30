@@ -1,5 +1,5 @@
 import { type HeaderChange } from "@/components/header";
-import { type Expense } from "@/contexts/DatabaseContext";
+import { type Range, type Expense } from "@/contexts/DatabaseContext";
 import { type Table } from "dexie";
 import { DateTime } from "luxon";
 
@@ -35,14 +35,6 @@ export type Type = {
 };
 
 type ExpenseColumns = "date" | "id" | "description" | "category" | "value";
-
-export type Range = {
-  column: string;
-  lower: string | number;
-  upper: string | number;
-  lowerOpen?: boolean | undefined;
-  upperOpen?: boolean;
-};
 
 const ExpenseDao = (table: Table): Type => ({
   getInitialDate: async () => {

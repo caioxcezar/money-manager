@@ -17,6 +17,7 @@ const Page = ({ children, title }: Props) => {
     { path: AppRoutes.HOME, title: t("home") },
     { path: AppRoutes.EXPENSES, title: t("expenses") },
     { path: AppRoutes.CATEGORIES, title: t("categories") },
+    { path: AppRoutes.INCOME, title: t("income") },
     { path: AppRoutes.BACKUP, title: t("backup") },
   ];
 

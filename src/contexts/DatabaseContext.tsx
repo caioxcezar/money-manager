@@ -6,7 +6,7 @@ const DB_NAME = "money-database.db";
 const DB_VERSION = 3;
 
 type Props = {
-  open: (table: "categories" | "expenses") => Table;
+  open: (table: "expenses" | "categories" | "income") => Table;
   db: DataBase;
   init: () => void;
 };
@@ -24,9 +24,25 @@ export type Expense = {
   value: number;
 };
 
+export type Income = {
+  id: number;
+  description: string;
+  date: number;
+  value: number;
+};
+
+export type Range = {
+  column: string;
+  lower: string | number;
+  upper: string | number;
+  lowerOpen?: boolean | undefined;
+  upperOpen?: boolean;
+};
+
 type DataBase = Dexie & {
   categories: EntityTable<Category, "id">;
   expenses: EntityTable<Expense, "id">;
+  income: EntityTable<Income, "id">;
 };
 
 export const DatabaseContext = createContext<Props | undefined>(undefined);
@@ -34,7 +50,7 @@ export const DatabaseContext = createContext<Props | undefined>(undefined);
 const DatabaseProvider = ({ children }: { children: React.ReactNode }) => {
   const db: DataBase = useRef(new Dexie(DB_NAME) as DataBase).current;
 
-  const open = (table: "categories" | "expenses"): Table => {
+  const open = (table: "expenses" | "categories" | "income"): Table => {
     init();
     return db[table];
   };
@@ -46,6 +62,7 @@ const DatabaseProvider = ({ children }: { children: React.ReactNode }) => {
     const schema = {
       categories: "++id, description",
       expenses: "++id, description, category, date, value",
+      income: "++id, description, date, value",
     };
 
     try {

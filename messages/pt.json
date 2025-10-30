@@ -4,6 +4,7 @@
     "expenses": "Despesas",
     "categories": "Categorias",
     "backup": "Backup",
+    "income": "Renda",
     "select_language": "Idioma:"
   },
   "home": {
@@ -24,7 +25,9 @@
     "november": "Novembro",
     "december": "Dezembro",
     "select_year": "Selecione Ano",
-    "total": "Total",
+    "total_expenses": "Dispesas totais",
+    "total_income": "Renda",
+    "balance": "Saldo",
     "cavas_expenses_title": "Dispesas"
   },
   "expenses": {
@@ -56,6 +59,23 @@
     "title": "Categorias",
     "group_new_title": "Criar",
     "input_category": "Nome da Categoria",
+    "button_new": "Criar"
+  },
+  "income": {
+    "title": "Renda",
+    "msg_empty_income_description": "Renda deve possuir uma descrição",
+    "msg_empty_income_value": "Renda deve possuir um valor",
+    "msg_empty_income_date": "Renda deve possuir uma data",
+    "msg_updated_success": "Renda atualizada com sucesso",
+    "msg_update_error": "Erro ao atualizar a renda",
+    "msg_deleted_success": "Renda apagada com sucesso",
+    "msg_deleted_failed": "Não foi possivel apagar",
+    "msg_insert_success": "Adicionado com sucesso",
+    "msg_insert_error": "Não foi possivel adicionar",
+    "group_new_title": "Criar",
+    "input_description": "Descrição",
+    "input_value": "Valor",
+    "input_date": "Data",
     "button_new": "Criar"
   },
   "backup": {

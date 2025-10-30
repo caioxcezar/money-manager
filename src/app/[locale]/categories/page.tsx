@@ -70,7 +70,7 @@ const Categories = () => {
       toast.success(t("msg_insert_success"));
     } catch (error) {
       const obj = error as Error;
-      toast.error(`${"msg_insert_error"}.\n${obj.message}`);
+      toast.error(`${t("msg_insert_error")}.\n${obj.message}`);
     }
   };
 

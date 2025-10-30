@@ -4,6 +4,7 @@
     "expenses": "Expenses",
     "categories": "Categories",
     "backup": "Backup",
+    "income": "Income",
     "select_language": "Language:"
   },
   "home": {
@@ -24,7 +25,9 @@
     "november": "November",
     "december": "December",
     "select_year": "Select Year",
-    "total": "Total",
+    "total_expenses": "Total expenses",
+    "total_income": "Income",
+    "balance": "Balance",
     "cavas_expenses_title": "Expenses"
   },
   "expenses": {
@@ -56,6 +59,23 @@
     "title": "Categories",
     "group_new_title": "Create New",
     "input_category": "Category name",
+    "button_new": "Create new"
+  },
+  "income": {
+    "title": "Income",
+    "msg_empty_income_description": "Income must have a description",
+    "msg_empty_income_value": "Income must have a value",
+    "msg_empty_income_date": "Income must have a date",
+    "msg_updated_success": "Income added successfully",
+    "msg_update_error": "Error while updateding Income",
+    "msg_deleted_success": "Deleted successfully",
+    "msg_deleted_failed": "Unable to delete",
+    "msg_insert_success": "Added Successfully",
+    "msg_insert_error": "Error while inserting",
+    "group_new_title": "Create New",
+    "input_description": "Description",
+    "input_value": "Value",
+    "input_date": "Date",
     "button_new": "Create new"
   },
   "backup": {
