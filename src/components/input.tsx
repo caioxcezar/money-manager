@@ -88,8 +88,10 @@ const Input = ({
     if (type == InputType.MONEY)
       return `${CURRENCE} ${value.replace(/[^0-9.]/g, "")}`;
 
-    if (type == InputType.DATETIME_LOCAL)
-      return value ? fromMillis(Number(value)) : "";
+    if (type == InputType.DATETIME_LOCAL) {
+      const millis = Number(value);
+      return millis ? fromMillis(millis) : "";
+    }
 
     if (type == InputType.NUMBER) return `${value}`;
 

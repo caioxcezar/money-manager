@@ -18,7 +18,7 @@ const IncomePage = () => {
   const [income, setIncome] = useState<Income[]>([]);
   const [description, setDescription] = useState({ value: "", error: true });
   const [value, setValue] = useState({ value: "", error: true });
-  const [date, setDate] = useState({ value: 0, error: true });
+  const [date, setDate] = useState({ value: "", error: true });
 
   useEffect(() => {
     onLoad();
@@ -72,7 +72,7 @@ const IncomePage = () => {
       if (date.error) throw new Error(t("msg_empty_income_date"));
 
       await database.income.insert(
-        description.value,
+        description.value.trim(),
         Number(value.value),
         Number(date.value)
       );
@@ -91,8 +91,8 @@ const IncomePage = () => {
           label={t("input_description")}
           onChange={(value) => {
             if (value == null || value instanceof File) return;
-            const description = value.toString().trim();
-            setDescription({ value: description, error: !description });
+            const description = value.toString();
+            setDescription({ value: description, error: !description.trim() });
           }}
           value={description.value}
           error={description.error}
@@ -113,10 +113,10 @@ const IncomePage = () => {
           type={InputType.DATETIME_LOCAL}
           onChange={(value) => {
             if (value == null || value instanceof File) return;
-            const date = value.toString().trim();
-            setDate({ value: Number(date), error: !date });
+            console.log(">>>date", value);
+            setDate({ error: !value, value: value.toString() });
           }}
-          value={date.value.toString()}
+          value={date.value}
           error={date.error}
         />
         <Button onClick={insertIncome} title={t("button_new")} />
