@@ -45,7 +45,12 @@
     "saved_success": "Sucesso~!",
     "saved_failed": "Não foi possível salvar",
     "deleted_success": "Apagado com sucesso",
-    "deleted_failed": "Erro ao apagar"
+    "deleted_failed": "Erro ao apagar",
+    "table_id": "Código",
+    "table_description": "Descrição",
+    "table_category": "Categoria",
+    "table_date": "Data",
+    "table_value": "Valor"
   },
   "categories": {
     "msg_empty_category": "Categoria deve ter um nome",
@@ -59,7 +64,9 @@
     "title": "Categorias",
     "group_new_title": "Criar",
     "input_category": "Nome da Categoria",
-    "button_new": "Criar"
+    "button_new": "Criar",
+    "table_id": "Código",
+    "table_description": "Descrição"
   },
   "income": {
     "title": "Renda",
@@ -76,7 +83,11 @@
     "input_description": "Descrição",
     "input_value": "Valor",
     "input_date": "Data",
-    "button_new": "Criar"
+    "button_new": "Criar",
+    "table_id": "Código",
+    "table_description": "Descrição",
+    "table_value": "Valor",
+    "table_date": "Data"
   },
   "backup": {
     "title": "Backup e restauração",
@@ -101,5 +112,9 @@
   "group": {
     "open": "Abrir",
     "close": "Fechar"
+  },
+  "table": {
+    "action": "Ação",
+    "delete": "Deletar essa linha"
   }
 }

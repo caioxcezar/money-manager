@@ -295,16 +295,37 @@ const Expenses = () => {
       <Table<Expense>
         list={expenses}
         model={[
-          { key: "id", type: InputType.NUMBER, readonly: true },
-          { key: "description", type: InputType.DEFAULT, readonly: false },
+          {
+            key: "id",
+            text: t("table_id"),
+            type: InputType.NUMBER,
+            readonly: true,
+          },
+          {
+            key: "description",
+            text: t("table_description"),
+            type: InputType.DEFAULT,
+            readonly: false,
+          },
           {
             key: "category",
+            text: t("table_category"),
             type: CellTypes.DROPDOWN,
             readonly: false,
             values: categories,
           },
-          { key: "date", type: InputType.DATETIME_LOCAL, readonly: false },
-          { key: "value", type: InputType.MONEY, readonly: false },
+          {
+            key: "date",
+            text: t("table_date"),
+            type: InputType.DATETIME_LOCAL,
+            readonly: false,
+          },
+          {
+            key: "value",
+            text: t("table_value"),
+            type: InputType.MONEY,
+            readonly: false,
+          },
         ]}
         onChange={updateExpense}
         onChangeOrder={setOrder}

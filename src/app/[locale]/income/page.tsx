@@ -126,21 +126,25 @@ const IncomePage = () => {
         model={[
           {
             key: "id",
+            text: t("table_id"),
             type: InputType.NUMBER,
             readonly: true,
           },
           {
             key: "description",
+            text: t("table_description"),
             type: InputType.DEFAULT,
             readonly: false,
           },
           {
             key: "value",
+            text: t("table_value"),
             type: InputType.MONEY,
             readonly: false,
           },
           {
             key: "date",
+            text: t("table_date"),
             type: InputType.DATETIME_LOCAL,
             readonly: false,
           },

@@ -45,7 +45,12 @@
     "success": "Success~!",
     "failed": "Unable to save",
     "deleted_success": "Deleted successfully",
-    "deleted_failed": "Error while deleting"
+    "deleted_failed": "Error while deleting",
+    "table_id": "Id",
+    "table_description": "Description",
+    "table_category": "Category",
+    "table_date": "Date",
+    "table_value": "Value"
   },
   "categories": {
     "msg_empty_category": "Category must have a name",
@@ -59,7 +64,9 @@
     "title": "Categories",
     "group_new_title": "Create New",
     "input_category": "Category name",
-    "button_new": "Create new"
+    "button_new": "Create new",
+    "table_id": "Id",
+    "table_description": "Description"
   },
   "income": {
     "title": "Income",
@@ -76,7 +83,11 @@
     "input_description": "Description",
     "input_value": "Value",
     "input_date": "Date",
-    "button_new": "Create new"
+    "button_new": "Create new",
+    "table_id": "Id",
+    "table_description": "Description",
+    "table_value": "Value",
+    "table_date": "Date"
   },
   "backup": {
     "title": "Backup and Restore",
@@ -101,5 +112,9 @@
   "group": {
     "open": "Open",
     "close": "Close"
+  },
+  "table": {
+    "action": "Action",
+    "delete": "Delete this entry"
   }
 }

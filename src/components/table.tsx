@@ -4,6 +4,7 @@ import Cell, { CellTypes } from "./cell";
 import Header, { type HeaderChange } from "./header";
 import { type DropdownOption } from "./dropdown";
 import { type InputType } from "./input";
+import { useTranslations } from "next-intl";
 
 type Prop<T extends Row> = {
   list: T[];
@@ -21,6 +22,7 @@ interface Row {
 
 type Model = {
   key: string;
+  text?: string;
   type: InputType | CellTypes;
   readonly: boolean;
   values?: DropdownOption[];
@@ -34,6 +36,8 @@ function Table<T extends Row>({
   initialSort,
   onChangeOrder = () => null,
 }: Prop<T>) {
+  const t = useTranslations("table");
+
   const [editing, setEditing] = useState<{ [key: string]: string | number }>(
     {}
   );
@@ -45,8 +49,8 @@ function Table<T extends Row>({
   const onSubmit = (value: string | number, idx: number, key: string) =>
     onChange({ ...list[idx], [key]: value });
 
-  const headers = model.map(({ key }) => key);
-  if (onDelete) headers.push("Action");
+  const headers = model.map(({ key, text }) => text ?? key);
+  if (onDelete) headers.push(t("action"));
 
   const body = list.map((item, idx) => (
     <tr
@@ -79,6 +83,7 @@ function Table<T extends Row>({
           <button
             className="rounded-lg p-2 bg-red-500 hover:bg-red-600 font-bold"
             onClick={() => onDelete(item)}
+            title={t("delete")}
           >
             &#x1f5d1;
           </button>

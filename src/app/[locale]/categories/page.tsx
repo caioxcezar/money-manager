@@ -95,11 +95,13 @@ const Categories = () => {
         model={[
           {
             key: "id",
+            text: t("table_id"),
             type: InputType.NUMBER,
             readonly: true,
           },
           {
             key: "description",
+            text: t("table_description"),
             type: InputType.DEFAULT,
             readonly: false,
           },
